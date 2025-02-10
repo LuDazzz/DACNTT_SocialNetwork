@@ -13,9 +13,6 @@ namespace SocialNetworkAPI.Models
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required, MaxLength(15)]
-        public string? PhoneNumber { get; set; }
-
         [Required]
         public string Password { get; set; }
 

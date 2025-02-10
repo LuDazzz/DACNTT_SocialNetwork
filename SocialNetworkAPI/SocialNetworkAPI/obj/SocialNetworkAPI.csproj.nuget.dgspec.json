@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\DACNTT\\Project\\SocialNetworkBackend\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj": {}
+    "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj": {}
   },
   "projects": {
-    "D:\\DACNTT\\Project\\SocialNetworkBackend\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj": {
+    "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\DACNTT\\Project\\SocialNetworkBackend\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj",
+        "projectUniqueName": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj",
         "projectName": "SocialNetworkAPI",
-        "projectPath": "D:\\DACNTT\\Project\\SocialNetworkBackend\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj",
+        "projectPath": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj",
         "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-        "outputPath": "D:\\DACNTT\\Project\\SocialNetworkBackend\\SocialNetworkAPI\\SocialNetworkAPI\\obj\\",
+        "outputPath": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "D:\\Visual Studio\\Tools and SDKs and Components\\NuGetPackages"

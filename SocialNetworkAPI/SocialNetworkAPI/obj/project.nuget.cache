@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "DrQuKqWsawXewqDg6/a32WS1GIkz3T5ahuDbJAWoIAfWp1stHyj9/ZiadVhk/WVYjpWHqlrArwq7Yif8qdslPw==",
+  "dgSpecHash": "jIxdlW5y1NGCsypEKEHDzZMOP2H/9ByceWG1WIGvXVOs5e9Whq8th2dc9nhF/aBYd5ui/xn04IA9YbFSPo2w1w==",
   "success": true,
-  "projectFilePath": "D:\\DACNTT\\Project\\SocialNetworkBackend\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj",
+  "projectFilePath": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\SocialNetworkAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\User\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\User\\.nuget\\packages\\bouncycastle.cryptography\\2.5.0\\bouncycastle.cryptography.2.5.0.nupkg.sha512",
