@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace SocialNetworkAPI.Models
 {
@@ -26,6 +27,9 @@ namespace SocialNetworkAPI.Models
         public string Gender { get; set; }
         public string? ResetCode { get; set; }
         public bool IsPrivate { get; set; }
+
+        [JsonIgnore]
+        public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
         public class RegisterRequest
         {
             public string Username { get; set; }
