@@ -81,8 +81,7 @@ namespace SocialNetworkAPI.Controllers
                     u.Password,
                     u.FirstName,
                     u.LastName,
-                    ProfilePictureURL = u.ProfilePictureURL ?? string.Empty, // Handle NULL
-                    PhoneNumber = u.PhoneNumber ?? string.Empty // Handle NULL if needed
+                    ProfilePictureURL = u.ProfilePictureURL ?? string.Empty, // Handle NULL                 
                 })
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
