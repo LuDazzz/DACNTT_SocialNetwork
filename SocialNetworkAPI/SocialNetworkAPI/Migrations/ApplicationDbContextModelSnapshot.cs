@@ -60,11 +60,6 @@ namespace SocialNetworkAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("varchar(15)");
-
                     b.Property<string>("ProfilePictureURL")
                         .HasColumnType("longtext");
 
