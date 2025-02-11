@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SocialNetworkAPI.Data;
 using SocialNetworkAPI.Models;
 using System;
@@ -86,34 +87,72 @@ namespace SocialNetworkAPI.Controllers
 
         // Tương tác - Like bài viết
         [HttpPost("like/{postId}")]
-        public IActionResult LikePost(int postId, [FromBody] int userId)
+        public async Task<IActionResult> LikePost(int postId, [FromBody] int userId)
         {
-            var like = new Like { PostID = postId, UserID = userId, DateTime = DateTime.UtcNow };
-            _context.Likes.Add(like);
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return Unauthorized("You need to log in to like a post.");
+
+            var post = _context.Posts.Find(postId);
+            if (post == null) return NotFound("Post not found");
+
+            post.LikeCounter++; // Tăng bộ đếm
             _context.SaveChanges();
-            return Ok("Post liked");
+
+            return Ok(new { message = "Post liked", likeCount = post.LikeCounter });
         }
 
         // Tương tác - Bình luận bài viết
         [HttpPost("comment/{postId}")]
-        public IActionResult CommentOnPost(int postId, [FromBody] Comment comment)
+        public async Task<IActionResult> CommentOnPost(int postId, [FromBody] Comment comment)
         {
+            if (comment == null || string.IsNullOrWhiteSpace(comment.Content))
+                return BadRequest("Invalid comment data");
+
+            var user = await _context.Users.FindAsync(comment.UserID);
+            if (user == null)
+                return Unauthorized("You need to log in to comment.");
+
+            var post = await _context.Posts.FindAsync(postId);
+            if (post == null) return NotFound("Post not found");
+
+            // Gán PostID trước khi thêm comment
             comment.PostID = postId;
             comment.DateTime = DateTime.UtcNow;
+
             _context.Comments.Add(comment);
-            _context.SaveChanges();
-            return Ok(new { message = "Comment added", comment });
+            await _context.SaveChangesAsync();  // Lưu comment trước để có ID
+
+            // Cập nhật CommentCounter sau khi thêm comment
+            post.CommentCounter = await _context.Comments.CountAsync(c => c.PostID == postId);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Comment added", comment, commentCount = post.CommentCounter });
         }
+
 
         // Tương tác - Chia sẻ bài viết
         [HttpPost("share/{postId}")]
-        public IActionResult SharePost(int postId, [FromBody] int userId)
+        public async Task<IActionResult> SharePost(int postId, [FromBody] int userId)
         {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+                return Unauthorized("You need to log in to share a post.");
+
+            var post = await _context.Posts.FindAsync(postId);
+            if (post == null) return NotFound("Post not found");
+
             var share = new Share { PostID = postId, UserShareID = userId };
             _context.Shares.Add(share);
-            _context.SaveChanges();
-            return Ok("Post shared successfully");
+            await _context.SaveChangesAsync(); // Lưu share trước
+
+            // Cập nhật ShareCounter
+            post.ShareCounter = await _context.Shares.CountAsync(s => s.PostID == postId);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Post shared successfully", shareCount = post.ShareCounter });
         }
+
 
         // Báo cáo bài viết
         [HttpPost("report/{postId}")]

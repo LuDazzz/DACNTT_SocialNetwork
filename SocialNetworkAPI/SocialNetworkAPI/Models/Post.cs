@@ -30,6 +30,9 @@ namespace SocialNetworkAPI.Models
         public bool IsUpdated { get; set; } = false;
 
         public DateTime? DateTimeUpdated { get; set; }
+        public int LikeCounter { get; set; } = 0;
+        public int CommentCounter { get; set; } = 0;
+        public int ShareCounter { get; set; } = 0;
 
         // Navigation properties
         public virtual ICollection<Like> Likes { get; set; } = new List<Like>();

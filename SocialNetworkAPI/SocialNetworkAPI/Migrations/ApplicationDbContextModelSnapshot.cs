@@ -93,6 +93,9 @@ namespace SocialNetworkAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<int>("CommentCounter")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -106,11 +109,17 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<bool>("IsUpdated")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<int>("LikeCounter")
+                        .HasColumnType("int");
+
                     b.Property<string>("MediaType")
                         .HasColumnType("longtext");
 
                     b.Property<string>("MediaURL")
                         .HasColumnType("longtext");
+
+                    b.Property<int>("ShareCounter")
+                        .HasColumnType("int");
 
                     b.Property<int>("UserID")
                         .HasColumnType("int");
