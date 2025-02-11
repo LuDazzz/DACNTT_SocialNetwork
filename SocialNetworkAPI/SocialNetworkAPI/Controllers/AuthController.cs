@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetworkAPI.Data;
 using SocialNetworkAPI.Models;
 using System.Security.Cryptography;
+//using System.IO.File.ReadAllBytes;
 using System.Text;
 using System.Threading.Tasks;
 using static SocialNetworkAPI.Models.User;
@@ -19,6 +20,18 @@ namespace SocialNetworkAPI.Controllers
         {
             _context = context;
         }
+        private byte[] GetDefaultProfilePicture()
+        {
+            string defaultImagePath = Path.Combine(Directory.GetCurrentDirectory(), "DefaultAvatar", "profile.jpg");
+
+            if (!System.IO.File.Exists(defaultImagePath))
+            {
+                throw new FileNotFoundException("Default profile picture not found.");
+            }
+
+            return System.IO.File.ReadAllBytes(defaultImagePath);
+        }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -34,6 +47,8 @@ namespace SocialNetworkAPI.Controllers
             {
                 return BadRequest(new { message = "All fields are required." });
             }
+
+            byte[] defaultProfilePicture = GetDefaultProfilePicture();
 
             // Check if email already exists
             if (_context.Users.Any(u => u.Email == request.Email))
@@ -51,12 +66,13 @@ namespace SocialNetworkAPI.Controllers
             var user = new User
             {
                 Username = request.Username,
-                Password = request.Password,  // Not hashed as per your request
+                Password = request.Password,  
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
                 Gender = request.Gender,
                 Dob = request.Dob,
+                ProfilePicture = defaultProfilePicture,
                 DateTimeCreate = DateTime.UtcNow
             };
 

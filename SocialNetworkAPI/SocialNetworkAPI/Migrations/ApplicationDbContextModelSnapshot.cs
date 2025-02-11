@@ -205,6 +205,9 @@ namespace SocialNetworkAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<byte[]>("ProfilePicture")
+                        .HasColumnType("longblob");
+
                     b.Property<string>("ProfilePictureURL")
                         .HasColumnType("longtext");
 
