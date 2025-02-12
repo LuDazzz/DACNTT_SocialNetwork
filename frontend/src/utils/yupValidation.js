@@ -34,20 +34,36 @@ const userRegisterSchema = yup.object({
 });
 
 const userLoginSchema = yup.object({
-  username: yup.string().required("Please enter username"),
-  password: yup.string().required("Please enter password")
-})
+  email: yup.string().required("Please enter email"),
+  password: yup.string().required("Please enter password"),
+});
 
 const resetPassSchema = yup.object({
-  email: yup.string().required("Email is required").email("Email is not valid")
-})
+  email: yup.string().required("Email is required").email("Email is not valid"),
+});
 
 const postSchema = yup.object({
-  content: yup.string().required("")
-})
+  content: yup.string().required(""),
+});
 
 const searchSchema = yup.object({
-  searchcontent: yup.string().required("Search is required")
-})
+  searchcontent: yup.string().required("Search is required"),
+});
 
-export {userRegisterSchema, userLoginSchema, resetPassSchema, postSchema, searchSchema};
+const confimPassSchema = yup.object({
+  passcode: yup.string().required("Passcode is required"),
+  newpass: yup
+    .string()
+    .required("New Password is required")
+    .min(8, "Password must contain at least 8 letters")
+    .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain special letter"),
+});
+
+export {
+  userRegisterSchema,
+  userLoginSchema,
+  resetPassSchema,
+  postSchema,
+  searchSchema,
+  confimPassSchema,
+};
