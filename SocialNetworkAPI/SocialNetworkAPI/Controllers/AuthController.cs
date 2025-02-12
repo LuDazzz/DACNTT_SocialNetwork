@@ -82,9 +82,7 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Registration successful!" });
         }
 
-
-
-
+    
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {

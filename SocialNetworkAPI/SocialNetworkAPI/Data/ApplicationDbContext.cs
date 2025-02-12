@@ -12,7 +12,8 @@ namespace SocialNetworkAPI.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Share> Shares { get; set; }
-        public DbSet<ReportListUser> ReportListUsers { get; set; }
+        public DbSet<ReportPost> ReportPosts { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

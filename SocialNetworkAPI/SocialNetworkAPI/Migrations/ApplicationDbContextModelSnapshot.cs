@@ -131,25 +131,30 @@ namespace SocialNetworkAPI.Migrations
                     b.ToTable("Posts");
                 });
 
-            modelBuilder.Entity("SocialNetworkAPI.Models.ReportListUser", b =>
+            modelBuilder.Entity("SocialNetworkAPI.Models.ReportPost", b =>
                 {
                     b.Property<int>("ReportID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("ReportedUserID")
+                    b.Property<int>("PostID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SenderID")
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("ReporterID")
                         .HasColumnType("int");
 
                     b.HasKey("ReportID");
 
-                    b.HasIndex("ReportedUserID");
+                    b.HasIndex("PostID");
 
-                    b.HasIndex("SenderID");
+                    b.HasIndex("ReporterID");
 
-                    b.ToTable("ReportListUsers");
+                    b.ToTable("ReportPosts");
                 });
 
             modelBuilder.Entity("SocialNetworkAPI.Models.Share", b =>
@@ -290,23 +295,23 @@ namespace SocialNetworkAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SocialNetworkAPI.Models.ReportListUser", b =>
+            modelBuilder.Entity("SocialNetworkAPI.Models.ReportPost", b =>
                 {
-                    b.HasOne("SocialNetworkAPI.Models.User", "ReportedUser")
+                    b.HasOne("SocialNetworkAPI.Models.Post", "Post")
                         .WithMany()
-                        .HasForeignKey("ReportedUserID")
+                        .HasForeignKey("PostID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SocialNetworkAPI.Models.User", "Sender")
+                    b.HasOne("SocialNetworkAPI.Models.User", "Reporter")
                         .WithMany()
-                        .HasForeignKey("SenderID")
+                        .HasForeignKey("ReporterID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ReportedUser");
+                    b.Navigation("Post");
 
-                    b.Navigation("Sender");
+                    b.Navigation("Reporter");
                 });
 
             modelBuilder.Entity("SocialNetworkAPI.Models.Share", b =>
