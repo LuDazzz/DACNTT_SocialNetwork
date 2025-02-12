@@ -20,7 +20,37 @@ builder.Services.AddCors(options =>
                         .AllowAnyHeader());
 });
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:5173")  // Replace with your frontend URL
+                  .AllowCredentials()  // Allow cookies/auth headers
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.WriteIndented = true;
+    });
+
+
 var app = builder.Build();
+
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
 app.UseRouting();

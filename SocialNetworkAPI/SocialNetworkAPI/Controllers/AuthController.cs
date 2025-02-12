@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SocialNetworkAPI.Data;
 using SocialNetworkAPI.Models;
 using System.Security.Cryptography;
+//using System.IO.File.ReadAllBytes;
 using System.Text;
 using System.Threading.Tasks;
 using static SocialNetworkAPI.Models.User;
@@ -19,6 +20,18 @@ namespace SocialNetworkAPI.Controllers
         {
             _context = context;
         }
+        private byte[] GetDefaultProfilePicture()
+        {
+            string defaultImagePath = Path.Combine(Directory.GetCurrentDirectory(), "DefaultAvatar", "profile.jpg");
+
+            if (!System.IO.File.Exists(defaultImagePath))
+            {
+                throw new FileNotFoundException("Default profile picture not found.");
+            }
+
+            return System.IO.File.ReadAllBytes(defaultImagePath);
+        }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -34,6 +47,8 @@ namespace SocialNetworkAPI.Controllers
             {
                 return BadRequest(new { message = "All fields are required." });
             }
+
+            byte[] defaultProfilePicture = GetDefaultProfilePicture();
 
             // Check if email already exists
             if (_context.Users.Any(u => u.Email == request.Email))
@@ -51,12 +66,13 @@ namespace SocialNetworkAPI.Controllers
             var user = new User
             {
                 Username = request.Username,
-                Password = request.Password,  // Not hashed as per your request
+                Password = request.Password,  
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 Email = request.Email,
                 Gender = request.Gender,
                 Dob = request.Dob,
+                ProfilePicture = defaultProfilePicture,
                 DateTimeCreate = DateTime.UtcNow
             };
 
@@ -112,7 +128,7 @@ namespace SocialNetworkAPI.Controllers
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email);
             if (user == null)
-                return NotFound(new { message = "Email không tồn tại." });
+                return NotFound(new { message = "Email does not exist. Please try again." });
 
             // Tạo mã reset ngẫu nhiên (6 chữ số)
             Random random = new Random();
@@ -123,9 +139,9 @@ namespace SocialNetworkAPI.Controllers
 
             // Gửi email chứa mã xác nhận
             var emailService = new EmailService();
-            await emailService.SendEmailAsync(user.Email, "Mã xác nhận đặt lại mật khẩu", $"Mã xác nhận của bạn là: {resetCode}");
+            await emailService.SendEmailAsync(user.Email, "The code to reset the Password", $"Your confirmation code is: {resetCode}");
 
-            return Ok(new { message = "Mã xác nhận đã được gửi đến email của bạn." });
+            return Ok(new { message = "The reset code has been sent to your email." });
         }
 
 
@@ -135,14 +151,14 @@ namespace SocialNetworkAPI.Controllers
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == request.Email && u.ResetCode == request.ResetCode);
             if (user == null)
-                return BadRequest(new { message = "Mã xác nhận không hợp lệ." });
+                return BadRequest(new { message = "Invalid code." });
 
             // Cập nhật mật khẩu mới
             user.Password = request.NewPassword;
             user.ResetCode = null;  // Xóa reset code sau khi đặt lại mật khẩu
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "Mật khẩu đã được đặt lại thành công." });
+            return Ok(new { message = "Reset Password successfully" });
         }
 
 

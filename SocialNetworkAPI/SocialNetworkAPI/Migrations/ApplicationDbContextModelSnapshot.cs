@@ -19,6 +19,160 @@ namespace SocialNetworkAPI.Migrations
                 .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("SocialNetworkAPI.Models.Comment", b =>
+                {
+                    b.Property<int>("CommentID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateTimeUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsUpdated")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReplyForID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("CommentID");
+
+                    b.HasIndex("PostID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Comments");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Like", b =>
+                {
+                    b.Property<int>("LikeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CommentID")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("PostID")
+                        .IsRequired()
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("LikeID");
+
+                    b.HasIndex("CommentID");
+
+                    b.HasIndex("PostID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Likes");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Post", b =>
+                {
+                    b.Property<int>("PostID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("CommentCounter")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("DateTimeUpdated")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsUpdated")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("LikeCounter")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MediaType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("MediaURL")
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ShareCounter")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("PostID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.ReportListUser", b =>
+                {
+                    b.Property<int>("ReportID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReportedUserID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReportID");
+
+                    b.HasIndex("ReportedUserID");
+
+                    b.HasIndex("SenderID");
+
+                    b.ToTable("ReportListUsers");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Share", b =>
+                {
+                    b.Property<int>("ShareID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("PostID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserShareID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ShareID");
+
+                    b.HasIndex("PostID");
+
+                    b.HasIndex("UserShareID");
+
+                    b.ToTable("Shares");
+                });
+
             modelBuilder.Entity("SocialNetworkAPI.Models.User", b =>
                 {
                     b.Property<int>("UserID")
@@ -60,10 +214,8 @@ namespace SocialNetworkAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("varchar(15)");
+                    b.Property<byte[]>("ProfilePicture")
+                        .HasColumnType("longblob");
 
                     b.Property<string>("ProfilePictureURL")
                         .HasColumnType("longtext");
@@ -79,6 +231,118 @@ namespace SocialNetworkAPI.Migrations
                     b.HasKey("UserID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Comment", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.Post", "Post")
+                        .WithMany("Comments")
+                        .HasForeignKey("PostID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Like", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.Comment", "Comment")
+                        .WithMany("Likes")
+                        .HasForeignKey("CommentID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetworkAPI.Models.Post", "Post")
+                        .WithMany("Likes")
+                        .HasForeignKey("PostID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Comment");
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Post", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "User")
+                        .WithMany("Posts")
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.ReportListUser", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "ReportedUser")
+                        .WithMany()
+                        .HasForeignKey("ReportedUserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ReportedUser");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Share", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserShareID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Comment", b =>
+                {
+                    b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Post", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Likes");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.User", b =>
+                {
+                    b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
         }
