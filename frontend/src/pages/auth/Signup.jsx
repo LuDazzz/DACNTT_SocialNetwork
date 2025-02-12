@@ -1,15 +1,24 @@
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import { Link } from "react-router";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
 import { yupResolver } from "@hookform/resolvers/yup";
-import {userRegisterSchema} from "../../utils/yupValidation";
+import { userRegisterSchema } from "../../utils/yupValidation";
 import { RadioButton } from "primereact/radiobutton";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+import { Toast } from "primereact/toast";
+import { registerUser } from "../../redux/authSlice";
+import { useRef } from "react";
 
 function Signup() {
+  const { isLoading, error } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const toastRef = useRef(null);
+
   const {
     register,
     handleSubmit,
@@ -20,19 +29,45 @@ function Signup() {
     resolver: yupResolver(userRegisterSchema),
   });
 
-  // const onsubmit = async (data) => {
-  //   try {
-  //     const res = await axios.post("api/register", data);
-  //     console.log("OK", res.data);
-  //   } catch (e) {
-  //     console.error("error", e.res?.data || e.message);
-  //   }
-  // };
+  const onSubmit = async (data) => {
+    const result = await dispatch(
+      registerUser({
+        username: data.username,
+        password: data.password,
+        firstName: data.firstname,
+        lastName: data.lastname,
+        email: data.email,
+        gender: data.gender,
+        dob: convertToISO(data.dob),
+      })
+    );
 
-  const onSubmit = (data) => console.log(data);
+    console.log(result)
+
+    if (!result.error) {
+      navigate("/login");
+    } else {
+      toastRef.current.show([
+        {
+          severity: "error",
+          summary: "Error",
+          detail: result.payload,
+          life: 2000,
+        },
+      ]);
+      console.log(data);
+    }
+  };
+
+  const convertToISO = (dateStr) => {
+    const [day, month, year] = dateStr.split("/").map(Number);
+    const date = new Date(year, month - 1, day);
+    return date.toISOString();
+  };
 
   return (
     <>
+      <Toast ref={toastRef} />
       <div className="w-screen h-screen bg-gradient-to-b from-cyan-500 to-white flex justify-center items-center">
         <div className="w-96 h-3/4 min-h-96 bg-white rounded-xl shadow-md overflow-auto">
           <div className="w-full text-center py-4 font-bold italic text-lg text-cyan-500">

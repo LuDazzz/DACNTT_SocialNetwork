@@ -6,9 +6,13 @@ import { resetPassSchema } from "../../utils/yupValidation";
 import { Link, useNavigate } from "react-router";
 import { Toast } from "primereact/toast";
 import { useRef } from "react";
+import { useDispatch } from "react-redux";
+import { requestPasscode } from "../../redux/authSlice";
+import { useSelector } from "react-redux";
 
 function ForgetPass() {
-  let navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -33,17 +37,20 @@ function ForgetPass() {
     }
   };
 
-  const onSubmit = (data) => {
-    toastRef.current.show([
-      {
-        severity: "success",
-        summary: "Successfully",
-        detail: "Please check your email to get link reset password!",
-        life: 2000,
-      },
-    ]);
-    navigate("/confirmpass");
-    console.log(data);
+  const onSubmit = async (data) => {
+    const result = await dispatch(requestPasscode({ email: data.email }));
+    if (!result.error) {
+      navigate("/confirmpass", { state: { email: data.email } });
+    } else {
+      toastRef.current.show([
+        {
+          severity: "error",
+          summary: "Error",
+          detail: result.payload,
+          life: 2000,
+        },
+      ]);
+    }
   };
 
   return (
@@ -54,7 +61,7 @@ function ForgetPass() {
           <div className="mt-20 mb-6 text-3xl text-center">Reset Password</div>
           <div className="px-10 text-xs text-gray-600 text-center">
             Please enter the email address that you used to register, and we
-            will send you a link to reset your password via Email.
+            will send you a passcode via email.
           </div>
           <form
             onSubmit={handleSubmit(onSubmit, onError)}

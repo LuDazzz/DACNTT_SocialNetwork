@@ -18,6 +18,8 @@ import PostSearch from "./components/Search/PostSearch";
 import ActionNoti from "./components/Notification/ActionNoti";
 import FriendReqNoti from "./components/Notification/FriendReqNoti";
 import ConfirmPass from "./pages/auth/ConfirmPass";
+import AuthRoute from "./components/AuthRoute";
+import PublicRoute from "./components/PublicRoute";
 
 //default color: cyan
 
@@ -26,7 +28,14 @@ function App() {
     <>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LayoutNav />}>
+          <Route
+            path="/"
+            element={
+              <AuthRoute>
+                <LayoutNav />
+              </AuthRoute>
+            }
+          >
             <Route index element={<NewsFeed />} />
             <Route path="/messenger" element={<Messenger />} />
             <Route path="/search" element={<Search />}>
@@ -56,10 +65,39 @@ function App() {
             <Route path="/setting" element={<Setting />} />
             <Route path="/comment" element={<Comment />} />
           </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          <Route path="/forgetpass" element={<ForgetPass />} />
-          <Route path="/confirmpass" element={<ConfirmPass />} />
+          {/* Public Route  */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/signup"
+            element={
+              <PublicRoute>
+                <Signup />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/forgetpass"
+            element={
+              <PublicRoute>
+                <ForgetPass />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/confirmpass"
+            element={
+              <PublicRoute>
+                <ConfirmPass />
+              </PublicRoute>
+            }
+          />
           <Route path="*" element={<div>Page not found</div>} />
         </Routes>
       </BrowserRouter>
