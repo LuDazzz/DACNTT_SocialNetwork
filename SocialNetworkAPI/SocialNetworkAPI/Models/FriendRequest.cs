@@ -17,7 +17,7 @@ namespace SocialNetworkAPI.Models
 
         public DateTime DateTime { get; set; } = DateTime.UtcNow;
 
-        public virtual User Sender { get; set; }
-        public virtual User Receiver { get; set; }
+        public virtual User? Sender { get; set; }
+        public virtual User? Receiver { get; set; }
     }
 }

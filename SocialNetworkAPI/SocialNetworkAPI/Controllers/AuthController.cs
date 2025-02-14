@@ -137,7 +137,7 @@ namespace SocialNetworkAPI.Controllers
 
             // Gửi email chứa mã xác nhận
             var emailService = new EmailService();
-            await emailService.SendEmailAsync(user.Email, "The code to reset the Password", $"Your confirmation code is: {resetCode}");
+            await emailService.SendEmailAsync(user.Email!, "The code to reset the Password", $"Your confirmation code is: {resetCode}");
 
             return Ok(new { message = "The reset code has been sent to your email." });
         }

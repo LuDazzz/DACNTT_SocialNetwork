@@ -50,6 +50,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+
 app.UseCors(MyAllowSpecificOrigins);
 
 app.UseHttpsRedirection();
@@ -60,9 +62,6 @@ app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.MapControllers();
 
 app.Run();

@@ -9,12 +9,12 @@ namespace SocialNetworkAPI.Models
         [Key]
         public int NotiID { get; set; }
 
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
         public DateTime DateTime { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("User")]
         public int UserID { get; set; }
 
-        public virtual User User { get; set; }
+        public virtual User? User { get; set; }
     }
 }

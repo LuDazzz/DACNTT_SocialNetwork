@@ -19,6 +19,6 @@ namespace SocialNetworkAPI.Models
 
         [Required]
         [MaxLength(500)]
-        public string Reason { get; set; }  // Lý do báo cáo
+        public string Reason { get; set; } = string.Empty;  // Lý do báo cáo
     }
 }

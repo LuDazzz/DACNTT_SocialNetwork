@@ -16,18 +16,22 @@ namespace SocialNetworkAPI.Models
         [ForeignKey("User")]
         public int UserID { get; set; }
 
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
+
         public DateTime DateTime { get; set; } = DateTime.UtcNow;
+
         public bool IsUpdated { get; set; } = false;
+
         public DateTime? DateTimeUpdated { get; set; }
 
-        // Reply có thể là 1 Comment khác hoặc Post
         public int? ReplyForID { get; set; }
 
         // Navigation Properties
         [JsonIgnore]
         public virtual Post? Post { get; set; }
+
         public virtual User? User { get; set; }
+
         public virtual ICollection<Like>? Likes { get; set; }
     }
 }

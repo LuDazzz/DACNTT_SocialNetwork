@@ -19,6 +19,35 @@ namespace SocialNetworkAPI.Migrations
                 .HasAnnotation("ProductVersion", "7.0.20")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("SocialNetworkAPI.Models.Block", b =>
+                {
+                    b.Property<int>("UserID1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID2")
+                        .HasColumnType("int");
+
+                    b.Property<int>("BlockID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BlockedUserUserID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("BlockerUserID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("UserID1", "UserID2");
+
+                    b.HasIndex("BlockedUserUserID");
+
+                    b.HasIndex("BlockerUserID");
+
+                    b.ToTable("Blocks");
+                });
+
             modelBuilder.Entity("SocialNetworkAPI.Models.Comment", b =>
                 {
                     b.Property<int>("CommentID")
@@ -56,6 +85,59 @@ namespace SocialNetworkAPI.Migrations
                     b.ToTable("Comments");
                 });
 
+            modelBuilder.Entity("SocialNetworkAPI.Models.FriendRequest", b =>
+                {
+                    b.Property<int>("RequestID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("ReceiverID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
+                    b.HasKey("RequestID");
+
+                    b.HasIndex("ReceiverID");
+
+                    b.HasIndex("SenderID");
+
+                    b.ToTable("FriendRequests");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Friendship", b =>
+                {
+                    b.Property<int>("UserID1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserID2")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("FriendshipID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("User1UserID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("User2UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserID1", "UserID2");
+
+                    b.HasIndex("User1UserID");
+
+                    b.HasIndex("User2UserID");
+
+                    b.ToTable("Friendships");
+                });
+
             modelBuilder.Entity("SocialNetworkAPI.Models.Like", b =>
                 {
                     b.Property<int>("LikeID")
@@ -63,14 +145,12 @@ namespace SocialNetworkAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("CommentID")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime(6)");
 
                     b.Property<int?>("PostID")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<int>("UserID")
@@ -85,6 +165,57 @@ namespace SocialNetworkAPI.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Likes");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Message", b =>
+                {
+                    b.Property<int>("MessageID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("ReceiverID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("MessageID");
+
+                    b.HasIndex("ReceiverID");
+
+                    b.HasIndex("SenderID");
+
+                    b.ToTable("Messages");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Notification", b =>
+                {
+                    b.Property<int>("NotiID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserID")
+                        .HasColumnType("int");
+
+                    b.HasKey("NotiID");
+
+                    b.HasIndex("UserID");
+
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("SocialNetworkAPI.Models.Post", b =>
@@ -129,6 +260,41 @@ namespace SocialNetworkAPI.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Posts");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.ReportListUser", b =>
+                {
+                    b.Property<int>("ReportID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int?>("ReportedUserUserID")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ReporterUserID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserIsReported")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReportID");
+
+                    b.HasIndex("ReportedUserUserID");
+
+                    b.HasIndex("ReporterUserID");
+
+                    b.ToTable("ReportListUsers");
                 });
 
             modelBuilder.Entity("SocialNetworkAPI.Models.ReportPost", b =>
@@ -238,6 +404,21 @@ namespace SocialNetworkAPI.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("SocialNetworkAPI.Models.Block", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "BlockedUser")
+                        .WithMany()
+                        .HasForeignKey("BlockedUserUserID");
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "Blocker")
+                        .WithMany()
+                        .HasForeignKey("BlockerUserID");
+
+                    b.Navigation("BlockedUser");
+
+                    b.Navigation("Blocker");
+                });
+
             modelBuilder.Entity("SocialNetworkAPI.Models.Comment", b =>
                 {
                     b.HasOne("SocialNetworkAPI.Models.Post", "Post")
@@ -257,29 +438,91 @@ namespace SocialNetworkAPI.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("SocialNetworkAPI.Models.FriendRequest", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Friendship", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "User1")
+                        .WithMany()
+                        .HasForeignKey("User1UserID");
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "User2")
+                        .WithMany()
+                        .HasForeignKey("User2UserID");
+
+                    b.Navigation("User1");
+
+                    b.Navigation("User2");
+                });
+
             modelBuilder.Entity("SocialNetworkAPI.Models.Like", b =>
                 {
                     b.HasOne("SocialNetworkAPI.Models.Comment", "Comment")
                         .WithMany("Likes")
                         .HasForeignKey("CommentID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SocialNetworkAPI.Models.Post", "Post")
                         .WithMany("Likes")
                         .HasForeignKey("PostID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("SocialNetworkAPI.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Likes")
                         .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Comment");
 
                     b.Navigation("Post");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Message", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "Receiver")
+                        .WithMany()
+                        .HasForeignKey("ReceiverID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "Sender")
+                        .WithMany()
+                        .HasForeignKey("SenderID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Receiver");
+
+                    b.Navigation("Sender");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.Notification", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -293,6 +536,21 @@ namespace SocialNetworkAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("SocialNetworkAPI.Models.ReportListUser", b =>
+                {
+                    b.HasOne("SocialNetworkAPI.Models.User", "ReportedUser")
+                        .WithMany()
+                        .HasForeignKey("ReportedUserUserID");
+
+                    b.HasOne("SocialNetworkAPI.Models.User", "Reporter")
+                        .WithMany()
+                        .HasForeignKey("ReporterUserID");
+
+                    b.Navigation("ReportedUser");
+
+                    b.Navigation("Reporter");
                 });
 
             modelBuilder.Entity("SocialNetworkAPI.Models.ReportPost", b =>
@@ -347,6 +605,8 @@ namespace SocialNetworkAPI.Migrations
 
             modelBuilder.Entity("SocialNetworkAPI.Models.User", b =>
                 {
+                    b.Navigation("Likes");
+
                     b.Navigation("Posts");
                 });
 #pragma warning restore 612, 618
