@@ -37,6 +37,7 @@ namespace SocialNetworkAPI.Models
 
         public int ShareCounter { get; set; } = 0;
 
+
         // Navigation properties
         public virtual ICollection<Like> Likes { get; set; } = new List<Like>();
         public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();

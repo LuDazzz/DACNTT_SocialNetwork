@@ -86,20 +86,79 @@ namespace SocialNetworkAPI.Controllers
 
         // Tương tác - Like bài viết
         [HttpPost("like/{postId}")]
-        public async Task<IActionResult> LikePost(int postId, [FromBody] int userId)
+        public async Task<IActionResult> LikePost(int postId, [FromBody] LikeRequest request)
         {
-            var user = await _context.Users.FindAsync(userId);
-            if (user == null)
-                return Unauthorized("You need to log in to like a post.");
+            if (request == null || request.UserID <= 0) return BadRequest("Invalid input data.");
 
-            var post = _context.Posts.Find(postId);
-            if (post == null) return NotFound("Post not found");
+            using (var transaction = await _context.Database.BeginTransactionAsync())
+            {
+                try
+                {
+                    // Tìm bài viết
+                    var post = await _context.Posts.FindAsync(postId);
+                    if (post == null) return NotFound("Post not found.");
 
-            post.LikeCounter++; // Tăng bộ đếm
-            _context.SaveChanges();
+                    // Kiểm tra xem người dùng đã like bài viết chưa
+                    var existingLike = await _context.Likes
+                        .FirstOrDefaultAsync(l => l.PostID == postId && l.UserID == request.UserID);
 
-            return Ok(new { message = "Post liked", likeCount = post.LikeCounter });
+                    if (existingLike != null)
+                    {
+                        // Nếu đã like, thì xóa like (Unlike)
+                        _context.Likes.Remove(existingLike);
+                    }
+                    else
+                    {
+                        // Nếu chưa like, thì thêm like
+                        var newLike = new Like { PostID = postId, UserID = request.UserID };
+                        _context.Likes.Add(newLike);
+                    }
+
+                    // Lưu thay đổi vào database
+                    await _context.SaveChangesAsync();
+
+                    // Cập nhật lại số lượng likes chính xác
+                    post.LikeCounter = await _context.Likes.CountAsync(l => l.PostID == postId);
+                    await _context.SaveChangesAsync();
+
+                    // Commit transaction
+                    await transaction.CommitAsync();
+
+                    // Trả về kết quả
+                    return Ok(new { message = existingLike != null ? "Unliked post" : "Liked post", likeCount = post.LikeCounter });
+                }
+                catch (Exception ex)
+                {
+                    // Rollback transaction nếu có lỗi
+                    await transaction.RollbackAsync();
+                    return StatusCode(500, "Internal server error");
+                }
+            }
         }
+
+        public class LikeRequest
+        {
+            public int UserID { get; set; }
+        }
+
+        // Kiểm tra đã like bài viết chưa
+        [HttpPost("HasLiked")]
+        public async Task<IActionResult> HasLiked([FromBody] LikeCheckRequest request)
+        {
+            if (request == null || request.PostID <= 0 || request.UserID <= 0)
+                return BadRequest(new { message = "Invalid input data." });
+
+            var hasLiked = await _context.Likes.AnyAsync(l => l.PostID == request.PostID && l.UserID == request.UserID);
+            return Ok(new { liked = hasLiked });
+        }
+
+        public class LikeCheckRequest
+        {
+            public int PostID { get; set; }
+            public int UserID { get; set; }
+        }
+
+
 
         // Tương tác - Bình luận bài viết
         [HttpPost("comment/{postId}")]
