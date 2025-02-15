@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SocialNetworkAPI.Models
 {
@@ -9,12 +7,21 @@ namespace SocialNetworkAPI.Models
         [Key]
         public int ReportID { get; set; }
 
-        [ForeignKey("Sender")]
-        public int SenderID { get; set; }
-        public virtual User Sender { get; set; }
+        [Required]
+        public int SenderID { get; set; }  // Người báo cáo
 
-        [ForeignKey("ReportedUser")]
-        public int ReportedUserID { get; set; }  // Đổi tên để tránh trùng lặp
-        public virtual User ReportedUser { get; set; }  // Đổi tên entity để rõ ràng
+        [Required]
+        public int UserIsReported { get; set; }  // Người bị báo cáo
+
+        [Required]
+        [StringLength(500)]
+        public string Reason { get; set; } = string.Empty;  // Lý do báo cáo
+
+        [Required]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        // Thiết lập quan hệ với User
+        public virtual User? Reporter { get; set; }
+        public virtual User? ReportedUser { get; set; }
     }
 }

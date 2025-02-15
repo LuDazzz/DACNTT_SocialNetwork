@@ -30,7 +30,6 @@ namespace SocialNetworkAPI.Controllers
             return Ok(post);
         }
 
-
         // Đăng bài viết
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] Post post)
@@ -156,12 +155,36 @@ namespace SocialNetworkAPI.Controllers
 
         // Báo cáo bài viết
         [HttpPost("report/{postId}")]
-        public IActionResult ReportPost(int postId, [FromBody] int userId)
+        public async Task<IActionResult> ReportPost(int postId, [FromBody] ReportPost report)
         {
-            var report = new ReportListUser { SenderID = userId, ReportedUserID = postId };
-            _context.ReportListUsers.Add(report);
-            _context.SaveChanges();
-            return Ok("Post reported successfully");
+            // Kiểm tra xem bài viết có tồn tại không
+            var post = await _context.Posts.FindAsync(postId);
+            if (post == null)
+            {
+                return NotFound("Post not found.");
+            }
+
+            // Kiểm tra xem user có tồn tại không (tạm thời dùng UserID từ body)
+            var user = await _context.Users.FindAsync(report.ReporterID);
+            if (user == null)
+            {
+                return Unauthorized("User not found. Please log in.");
+            }
+
+            // Tạo báo cáo mới
+            var newReport = new ReportPost
+            {
+                ReporterID = report.ReporterID, // Sẽ thay bằng UserID từ JWT nếu có
+                PostID = postId,
+                Reason = report.Reason
+            };
+
+            _context.ReportPosts.Add(newReport);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Post reported successfully.", report = newReport });
         }
+
+
     }
 }

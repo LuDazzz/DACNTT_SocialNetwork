@@ -9,15 +9,17 @@ namespace SocialNetworkAPI.Models
         [Key]
         public int BlockID { get; set; }
 
-        [ForeignKey("User1")]
-        public int UserID1 { get; set; }
+        [Required]
+        public int UserID1 { get; set; }  // Người thực hiện chặn
 
-        [ForeignKey("User2")]
-        public int UserID2 { get; set; }
+        [Required]
+        public int UserID2 { get; set; }  // Người bị chặn
 
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        [Required]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual User User1 { get; set; }
-        public virtual User User2 { get; set; }
+        // Quan hệ với bảng User
+        public virtual User? Blocker { get; set; }
+        public virtual User? BlockedUser { get; set; }
     }
 }

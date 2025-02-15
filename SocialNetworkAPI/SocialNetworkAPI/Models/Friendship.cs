@@ -9,15 +9,17 @@ namespace SocialNetworkAPI.Models
         [Key]
         public int FriendshipID { get; set; }
 
-        [ForeignKey("User1")]
+        [Required]
         public int UserID1 { get; set; }
 
-        [ForeignKey("User2")]
+        [Required]
         public int UserID2 { get; set; }
 
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        [Required]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public virtual User User1 { get; set; }
-        public virtual User User2 { get; set; }
+        // Thiết lập quan hệ với bảng User
+        public virtual User? User1 { get; set; }
+        public virtual User? User2 { get; set; }
     }
 }

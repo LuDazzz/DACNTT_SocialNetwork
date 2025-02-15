@@ -32,6 +32,83 @@ namespace SocialNetworkAPI.Controllers
             return System.IO.File.ReadAllBytes(defaultImagePath);
         }
 
+        [HttpGet("getUserById/{userId}")]
+        public async Task<IActionResult> GetUserById(int userId)
+        {
+            var user = await _context.Users
+                .Where(u => u.UserID == userId)
+                .Select(u => new
+                {
+                    u.UserID,
+                    u.Username,
+                    u.Email,
+                    u.FirstName,
+                    u.LastName,
+                    u.Gender,
+                    u.Dob,
+                    u.Bio,
+                    u.ProfilePicture,
+                    u.IsPrivate,
+                    u.IsOnline,
+                    u.DateTimeCreate
+                })
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            return Ok(user);
+        }
+
+        [HttpGet("getPostByUserId/{userId}")]
+        public async Task<IActionResult> GetPostByUserId(int userId)
+        {
+            var posts = await _context.Posts
+                .Where(p => p.UserID == userId)
+                .Select(p => new
+                {
+                    p.PostID,
+                    p.UserID,
+                    p.Content,
+                    p.MediaType,
+                    p.MediaURL,
+                    p.DateTime,
+                    p.IsUpdated,
+                    p.DateTimeUpdated
+                })
+                .ToListAsync();
+
+            if (!posts.Any())
+            {
+                return NotFound(new { message = "No posts found for this user." });
+            }
+
+            return Ok(posts);
+        }
+
+        [HttpGet("GetFriendByUserId/{userId}")]
+        public async Task<IActionResult> GetFriendByUserId(int userId)
+        {
+            var friends = await (from f in _context.Friendships
+                                 join u in _context.Users on
+                                 (f.UserID1 == userId ? f.UserID2 : f.UserID1) equals u.UserID
+                                 where f.UserID1 == userId || f.UserID2 == userId
+                                 select new
+                                 {
+                                     FriendID = u.UserID,
+                                     Username = u.Username,
+                                     FirstName = u.FirstName,
+                                     LastName = u.LastName,
+                                     ProfilePicture = u.ProfilePicture
+                                 }).ToListAsync();
+
+            return Ok(friends);
+        }
+
+
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -82,9 +159,7 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Registration successful!" });
         }
 
-
-
-
+    
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -96,8 +171,7 @@ namespace SocialNetworkAPI.Controllers
                     u.Email,
                     u.Password,
                     u.FirstName,
-                    u.LastName,
-                    ProfilePictureURL = u.ProfilePictureURL ?? string.Empty, // Handle NULL                 
+                    u.LastName,            
                 })
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
@@ -117,7 +191,6 @@ namespace SocialNetworkAPI.Controllers
                     user.Email,
                     user.FirstName,
                     user.LastName,
-                    user.ProfilePictureURL
                 }
             });
         }
@@ -139,7 +212,7 @@ namespace SocialNetworkAPI.Controllers
 
             // Gửi email chứa mã xác nhận
             var emailService = new EmailService();
-            await emailService.SendEmailAsync(user.Email, "The code to reset the Password", $"Your confirmation code is: {resetCode}");
+            await emailService.SendEmailAsync(user.Email!, "The code to reset the Password", $"Your confirmation code is: {resetCode}");
 
             return Ok(new { message = "The reset code has been sent to your email." });
         }
