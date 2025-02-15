@@ -5,16 +5,19 @@ import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { confimPassSchema } from "../../utils/yupValidation";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { confirmPassword } from "../../redux/authSlice";
 import { Toast } from "primereact/toast";
 
 function ConfirmPass() {
+  // const {isAuthenticated}= useSelector((state) => state.auth);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const emailForgetPass = location.state?.email;
   const toastRef = useRef(null);
+
+  console.log(emailForgetPass);
 
   const {
     register,
@@ -32,6 +35,8 @@ function ConfirmPass() {
   });
 
   const onSubmit = async (data) => {
+    console.log("Submitting for:", location.pathname);
+
     const result = await dispatch(
       confirmPassword({
         email: data.email,
@@ -41,7 +46,7 @@ function ConfirmPass() {
     );
 
     if (!result.error) {
-      toastRef.current.show([
+      toastRef.current?.show([
         {
           severity: "success",
           summary: "Success",
@@ -54,7 +59,7 @@ function ConfirmPass() {
         navigate("/login", { replace: true });
       }, 2000);
     } else {
-      toastRef.current.show([
+      toastRef.current?.show([
         {
           severity: "error",
           summary: "Error",
@@ -68,9 +73,11 @@ function ConfirmPass() {
   return (
     <>
       <Toast ref={toastRef} />
-      <div className="w-screen h-screen bg-gradient-to-b from-cyan-500 to-white flex flex-col justify-center items-center">
+      <div className="w-full h-screen bg-gradient-to-b from-cyan-500 to-white flex flex-col justify-center items-center">
         <div className="w-96 h-1/2 min-h-96 bg-white rounded-xl shadow-md overflow-auto flex flex-col items-center justify-center">
-          <div className="text-cyan-500 font-bold text-2xl">Change Password</div>
+          <div className="text-cyan-500 font-bold text-2xl">
+            Change Password
+          </div>
           <div className="text-cyan-500 w-80 text-center text-sm">
             Please enter reset code and new password
           </div>
@@ -88,7 +95,7 @@ function ConfirmPass() {
                   <p className="pl-2 text-red-600 text-sm">
                     {errors.passcode.message}
                   </p>
-                )}  
+                )}
               </div>
               <div>
                 <InputText

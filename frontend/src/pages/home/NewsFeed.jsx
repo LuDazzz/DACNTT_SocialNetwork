@@ -1,11 +1,55 @@
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Post from "../../components/Post";
 import { postSchema } from "../../utils/yupValidation";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useDispatch } from "react-redux";
+import { createPostThread } from "../../redux/postSlice";
 
 const NewsFeed = () => {
+  const dispatch = useDispatch();
+  const toastRef = useRef(null);
+  const userLoggedin = JSON.parse(localStorage.getItem("user"));
+
+  const {
+    register: postRegister,
+    handleSubmit: postHandleSubmit,
+    reset,
+  } = useForm({
+    resolver: yupResolver(postSchema),
+  });
+
+  const onSubmitPost = async (data) => {
+    const result = await dispatch(
+      createPostThread({
+        userID: userLoggedin.userID,
+        content: data.postcontent,
+      })
+    );
+    console.log(result);
+    if (!result.error) {
+      toastRef.current.show([
+        {
+          severity: "success",
+          summary: "Success",
+          detail: "Post successfully",
+          life: 2000,
+        },
+      ]);
+    } else {
+      toastRef.current.show([
+        {
+          severity: "error",
+          summary: "Error",
+          detail: result.payload,
+          life: 2000,
+        },
+      ]);
+    }
+    reset();
+  };
+
   const [posts, setPost] = useState([
     {
       id: 1,
@@ -13,10 +57,10 @@ const NewsFeed = () => {
         "https://images.theconversation.com/files/625049/original/file-20241010-15-95v3ha.jpg?ixlib=rb-4.1.0&rect=4%2C12%2C2679%2C1521&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip",
       username: "dat1",
       time: "4h",
-      content: "datatatatatatattatatatatatatatatatata atatat tat at at at a",
+      content: "Trời hôm nay thật đẹp, liệu có ai muốn đi chơi không?",
       likeNum: 2,
       cmtNum: 3,
-      shareNum: 3,
+      shareNum: 1,
       isLiked: false,
       isFollow: false,
     },
@@ -27,9 +71,9 @@ const NewsFeed = () => {
       username: "dat2",
       time: "4h",
       content:
-        "datatatatatatattatatatatatatatatatata atatat tat at at at aaaaaaaaaaaaaaaaaaaaaaaaaaaaa       dadasdas das dasdas",
-      likeNum: 2,
-      cmtNum: 3,
+        "Thật khó khăn khi phải học online, liệu có ai muốn học chung không?",
+      likeNum: 31,
+      cmtNum: 20,
       shareNum: 3,
       isLiked: false,
       isFollow: false,
@@ -65,13 +109,6 @@ const NewsFeed = () => {
     );
   };
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({ resolver: yupResolver(postSchema) });
-
-  const onSubmit = (data) => console.log(data);
 
   return (
     <>
@@ -81,7 +118,7 @@ const NewsFeed = () => {
         </div>
         <div className="w-2/4 min-w-700 h-9/10 border-2 border-gray-300 shadow-2xl bg-white rounded-t-2xl overflow-auto">
           <form
-            onSubmit={handleSubmit(onSubmit)}
+            onSubmit={postHandleSubmit(onSubmitPost)}
             className="flex items-center justify-between pt-5 pb-4 mx-10 "
           >
             <div className="w-fit flex justify-center">
@@ -90,7 +127,7 @@ const NewsFeed = () => {
             {/* <form onSubmit={handleSubmit(onSubmit)} className="flex w-full h-full"> */}
             <div className="w-4/5 flex items-center">
               <textarea
-                {...register("contentpost")}
+                {...postRegister("contentpost")}
                 id="contentpost"
                 maxLength="150"
                 placeholder="Post what you want!"

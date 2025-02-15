@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import ForgetPass from "./pages/auth/ForgetPass";
@@ -20,14 +20,31 @@ import FriendReqNoti from "./components/Notification/FriendReqNoti";
 import ConfirmPass from "./pages/auth/ConfirmPass";
 import AuthRoute from "./components/AuthRoute";
 import PublicRoute from "./components/PublicRoute";
-
-//default color: cyan
+import AdminRoute from "./components/AdminRoute";
+import AdminHome from "./pages/admin/adminHome";
+import ReportList from "./components/Admin/ReportList";
+import UserList from "./components/Admin/UserList";
+import PostList from "./components/Admin/PostList";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Routes>
+          {/* Admin Route  */}
+          <Route
+            path="/admin"
+            element={
+              // <AdminRoute>
+              <AdminHome />
+              // </AdminRoute>
+            }
+          >
+            <Route index element={<ReportList />} />
+            <Route path="/admin/userlist" element={<UserList />} />
+            <Route path="/admin/postlist" element={<PostList />} />
+          </Route>
+          {/* Auth Route  */}
           <Route
             path="/"
             element={
@@ -37,6 +54,7 @@ function App() {
             }
           >
             <Route index element={<NewsFeed />} />
+            <Route path="/confirmpasslogged" element={<ConfirmPass />} />
             <Route path="/messenger" element={<Messenger />} />
             <Route path="/search" element={<Search />}>
               <Route path="/search/user" element={<UserSearch />} />

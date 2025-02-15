@@ -8,7 +8,6 @@ import { Toast } from "primereact/toast";
 import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { requestPasscode } from "../../redux/authSlice";
-import { useSelector } from "react-redux";
 
 function ForgetPass() {
   const dispatch = useDispatch();

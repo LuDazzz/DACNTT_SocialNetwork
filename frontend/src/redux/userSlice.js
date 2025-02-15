@@ -3,80 +3,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../api/axiosInstances";
 
 const initialState = {
-  user: JSON.parse(localStorage.getItem("user")) || null,
-  isAuthenticated: !!localStorage.getItem("user"),
+  user: null,
   isLoading: false,
   error: null,
 };
 
-export const login = createAsyncThunk(
-  "auth/login",
-  async ({ email, password }, { rejectWithValue }) => {
+export const getFriendList = createAsyncThunk(
+  "api-link",
+  async ({ userId }, { rejectWithValue }) => {
     try {
-      const res = await API.post(
-        "auth/login",
-        { email, password },
-        {
-          withCredentials: true,
-        }
-      );
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      return res.data;
-    } catch (error) {
-      console.log(error);
-
-      return rejectWithValue(error.response.data.message);
-    }
-  }
-);
-
-export const registerUser = createAsyncThunk(
-  "auth/register",
-  async (
-    { username, password, firstName, lastName, email, gender, dob },
-    { rejectWithValue }
-  ) => {
-    try {
-      const res = await API.post(
-        "auth/register",
-        { username, password, firstName, lastName, email, gender, dob },
-        {
-          withCredentials: true,
-        }
-      );
-      return res.data;
-    } catch (error) {
-      return rejectWithValue(error.response.data.message);
-    }
-  }
-);
-
-export const requestPasscode = createAsyncThunk(
-  "auth/reset-password-request",
-  async ({ email }, { rejectWithValue }) => {
-    try {
-      const res = await API.post(
-        "auth/reset-password-request",
-        { email },
-        { withCredentials: true }
-      );
-      // console.log(res.data);
-      return res.data;
-    } catch (error) {
-      console.log(error);
-      return rejectWithValue(error.response.data.message);
-    }
-  }
-);
-
-export const confirmPassword = createAsyncThunk(
-  "auth/reset-password",
-  async ({ email, resetCode, newPassword }, { rejectWithValue }) => {
-    try {
-      const res = await API.post("auth/reset-password", {
-        email,
-        resetCode,
-        newPassword,
+      const res = await API.get(`/api-link/${userId}`, {
+        withCredentials: true,
       });
       return res.data;
     } catch (error) {
@@ -85,8 +22,8 @@ export const confirmPassword = createAsyncThunk(
   }
 );
 
-const authSlice = createSlice({
-  name: "auth",
+const userSlice = createSlice({
+  name: "user",
   initialState,
   reducers: {
     clearError: (state) => {

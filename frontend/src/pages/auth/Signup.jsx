@@ -7,14 +7,13 @@ import { Calendar } from "primereact/calendar";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { userRegisterSchema } from "../../utils/yupValidation";
 import { RadioButton } from "primereact/radiobutton";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { Toast } from "primereact/toast";
 import { registerUser } from "../../redux/authSlice";
 import { useRef } from "react";
 
 function Signup() {
-  const { isLoading, error } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toastRef = useRef(null);

@@ -13,7 +13,11 @@ const AuthRoute = ({ children }) => {
   }, [isAuthenticated, isLoading, navigate]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-screen h-screen flex justify-center items-center bg-opacity-50">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   return isAuthenticated ? children : null;

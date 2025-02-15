@@ -11,12 +11,13 @@ const commentArr = [
   {
     cmtid: 1,
     userid: 1,
-    content: "checkcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheckcheck",
+    content:
+      "Tôi nè bạn",
     post: {
       id: 1,
       imgurl:
         "https://images.theconversation.com/files/625049/original/file-20241010-15-95v3ha.jpg?ixlib=rb-4.1.0&rect=4%2C12%2C2679%2C1521&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip",
-      username: "dat1",
+      username: "521h0441",
       time: "4h",
       content: "datatatatatatattatatatatatatatatatata atatat tat at at at a",
       likeNum: 2,
@@ -110,7 +111,9 @@ const Comment = () => {
             </div>
           </div>
           <div className="px-4">
-            <div>content content content content content content content</div>
+            <div className="max-h-40 break-words overflow-auto">
+            Thật khó khăn khi phải học online, liệu có ai muốn học chung không?
+            </div>
             <div>
               <div className="flex gap-10 text-gray-500 text-sm">
                 <div
@@ -121,20 +124,20 @@ const Comment = () => {
                   }`}
                 >
                   <div className="pi pi-thumbs-up" />
-                  <div>1</div>
+                  <div>31</div>
                 </div>
                 <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95">
                   <div className="pi pi-comments" />
-                  <div>1</div>
+                  <div>20</div>
                 </div>
                 <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95">
                   <div className="pi pi-share-alt" />
-                  <div>1</div>
+                  <div>3</div>
                 </div>
               </div>
             </div>
           </div>
-          <Divider/>
+          <Divider />
           {/* comment list  */}
           <div>
             {commentArr.map((commentItems) => (
@@ -143,6 +146,7 @@ const Comment = () => {
               </div>
             ))}
           </div>
+          {/* <div>check</div> */}
         </div>
       </div>
     </>

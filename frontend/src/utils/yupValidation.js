@@ -43,7 +43,7 @@ const resetPassSchema = yup.object({
 });
 
 const postSchema = yup.object({
-  content: yup.string().required(""),
+  postcontent: yup.string().required("Enter content to post"),
 });
 
 const searchSchema = yup.object({

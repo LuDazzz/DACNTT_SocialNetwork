@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { Toast } from "primereact/toast";
-import { Link } from "react-router";
 import { Menu } from "primereact/menu";
 import { Divider } from "primereact/divider";
 
@@ -21,7 +20,6 @@ const CommentDetail = ({ comment }) => {
         life: 2000,
       },
     ]);
-    console.log(postid);
   };
 
   const menuRef = useRef(null);
@@ -64,9 +62,7 @@ const CommentDetail = ({ comment }) => {
             </div>
           </div>
           {/* content */}
-          <div className="w-4/5">
-            <div className="text-sm">{comment.content}</div>
-          </div>
+          <div className="text-sm break-words">{comment.content}</div>
           {/* like, cmt, share */}
           <div className="flex gap-10 text-gray-500 text-sm">
             <div
@@ -77,18 +73,6 @@ const CommentDetail = ({ comment }) => {
             >
               <div className="pi pi-thumbs-up" />
               <div>{comment.post.likeNum}</div>
-            </div>
-            <Link
-              to={`/comment?postId=${comment.post.id}`}
-              query={{ postid: comment.post.id }}
-              className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95"
-            >
-              <div className="pi pi-comments" />
-              <div>{comment.post.cmtNum}</div>
-            </Link>
-            <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95">
-              <div className="pi pi-share-alt" />
-              <div>{comment.post.shareNum}</div>
             </div>
           </div>
         </div>

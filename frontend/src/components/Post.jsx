@@ -81,7 +81,7 @@ const Post = ({ post, onToggleLike, onToggleFollow }) => {
               <div>{post.likeNum}</div>
             </div>
             <Link
-              to={`/comment?postId=${post.id}`}
+              to={`/comment?postId=${post.id}`} 
               query={{ postid: post.id }}
               className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95"
             >
