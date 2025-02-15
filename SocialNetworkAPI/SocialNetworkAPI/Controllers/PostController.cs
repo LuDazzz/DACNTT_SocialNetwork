@@ -30,7 +30,6 @@ namespace SocialNetworkAPI.Controllers
             return Ok(post);
         }
 
-
         // Đăng bài viết
         [HttpPost]
         public async Task<IActionResult> CreatePost([FromBody] Post post)
