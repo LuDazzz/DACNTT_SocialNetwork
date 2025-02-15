@@ -356,7 +356,7 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<DateTime>("DateTimeCreate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("Dob")
+                    b.Property<DateTime?>("Dob")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Email")
@@ -364,11 +364,9 @@ namespace SocialNetworkAPI.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Gender")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsOnline")
@@ -378,7 +376,6 @@ namespace SocialNetworkAPI.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Password")
@@ -387,9 +384,6 @@ namespace SocialNetworkAPI.Migrations
 
                     b.Property<byte[]>("ProfilePicture")
                         .HasColumnType("longblob");
-
-                    b.Property<string>("ProfilePictureURL")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("ResetCode")
                         .HasColumnType("longtext");

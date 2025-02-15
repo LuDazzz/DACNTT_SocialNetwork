@@ -32,6 +32,37 @@ namespace SocialNetworkAPI.Controllers
             return System.IO.File.ReadAllBytes(defaultImagePath);
         }
 
+        [HttpGet("getUserById/{userId}")]
+        public async Task<IActionResult> GetUserById(int userId)
+        {
+            var user = await _context.Users
+                .Where(u => u.UserID == userId)
+                .Select(u => new
+                {
+                    u.UserID,
+                    u.Username,
+                    u.Email,
+                    u.FirstName,
+                    u.LastName,
+                    u.Gender,
+                    u.Dob,
+                    u.Bio,
+                    u.ProfilePicture,
+                    u.IsPrivate,
+                    u.IsOnline,
+                    u.DateTimeCreate
+                })
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found" });
+            }
+
+            return Ok(user);
+        }
+
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
@@ -94,8 +125,7 @@ namespace SocialNetworkAPI.Controllers
                     u.Email,
                     u.Password,
                     u.FirstName,
-                    u.LastName,
-                    ProfilePictureURL = u.ProfilePictureURL ?? string.Empty, // Handle NULL                 
+                    u.LastName,            
                 })
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
@@ -115,7 +145,6 @@ namespace SocialNetworkAPI.Controllers
                     user.Email,
                     user.FirstName,
                     user.LastName,
-                    user.ProfilePictureURL
                 }
             });
         }
