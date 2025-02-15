@@ -62,6 +62,52 @@ namespace SocialNetworkAPI.Controllers
             return Ok(user);
         }
 
+        [HttpGet("getPostByUserId/{userId}")]
+        public async Task<IActionResult> GetPostByUserId(int userId)
+        {
+            var posts = await _context.Posts
+                .Where(p => p.UserID == userId)
+                .Select(p => new
+                {
+                    p.PostID,
+                    p.UserID,
+                    p.Content,
+                    p.MediaType,
+                    p.MediaURL,
+                    p.DateTime,
+                    p.IsUpdated,
+                    p.DateTimeUpdated
+                })
+                .ToListAsync();
+
+            if (!posts.Any())
+            {
+                return NotFound(new { message = "No posts found for this user." });
+            }
+
+            return Ok(posts);
+        }
+
+        [HttpGet("GetFriendByUserId/{userId}")]
+        public async Task<IActionResult> GetFriendByUserId(int userId)
+        {
+            var friends = await (from f in _context.Friendships
+                                 join u in _context.Users on
+                                 (f.UserID1 == userId ? f.UserID2 : f.UserID1) equals u.UserID
+                                 where f.UserID1 == userId || f.UserID2 == userId
+                                 select new
+                                 {
+                                     FriendID = u.UserID,
+                                     Username = u.Username,
+                                     FirstName = u.FirstName,
+                                     LastName = u.LastName,
+                                     ProfilePicture = u.ProfilePicture
+                                 }).ToListAsync();
+
+            return Ok(friends);
+        }
+
+
 
 
         [HttpPost("register")]
