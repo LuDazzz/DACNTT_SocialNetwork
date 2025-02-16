@@ -353,6 +353,9 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<string>("Bio")
                         .HasColumnType("longtext");
 
+                    b.Property<byte[]>("CoverPhoto")
+                        .HasColumnType("longblob");
+
                     b.Property<DateTime>("DateTimeCreate")
                         .HasColumnType("datetime(6)");
 

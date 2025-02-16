@@ -22,13 +22,34 @@ namespace SocialNetworkAPI.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPost(int id)
         {
-            var post = await _context.Posts.FindAsync(id);
+            var post = await _context.Posts
+                .Where(p => p.PostID == id)
+                .Select(p => new
+                {
+                    p.PostID,
+                    p.UserID,
+                    p.Content,
+                    p.MediaType,
+                    p.MediaURL,
+                    p.DateTime,
+                    p.IsUpdated,
+                    p.DateTimeUpdated,
+                    User = new
+                    {
+                        p.User.UserID,
+                        p.User.Username,
+                        p.User.ProfilePicture
+                    }
+                })
+                .FirstOrDefaultAsync();
+
             if (post == null)
             {
                 return NotFound();
             }
             return Ok(post);
         }
+
 
         // Đăng bài viết
         [HttpPost]

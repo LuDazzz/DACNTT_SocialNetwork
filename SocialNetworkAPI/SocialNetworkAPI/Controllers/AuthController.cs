@@ -31,6 +31,17 @@ namespace SocialNetworkAPI.Controllers
 
             return System.IO.File.ReadAllBytes(defaultImagePath);
         }
+        
+        private byte[] GetDefaultPhoto()
+        {
+            string defaultImagePath1 = Path.Combine(Directory.GetCurrentDirectory(), "DefaultAvatar", "coverPhoto.jpg");
+            if (!System.IO.File.Exists(defaultImagePath1))
+            {
+                throw new FileNotFoundException("Default profile picture not found.");
+            }
+
+            return System.IO.File.ReadAllBytes(defaultImagePath1);
+        }
 
         [HttpGet("getUserById/{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
@@ -128,6 +139,7 @@ namespace SocialNetworkAPI.Controllers
             }
 
             byte[] defaultProfilePicture = GetDefaultProfilePicture();
+            byte[] defualtCoverPhoto = GetDefaultPhoto();
 
             // Check if email already exists
             if (_context.Users.Any(u => u.Email == request.Email))
@@ -152,6 +164,7 @@ namespace SocialNetworkAPI.Controllers
                 Gender = request.Gender,
                 Dob = request.Dob,
                 ProfilePicture = defaultProfilePicture,
+                CoverPhoto = defualtCoverPhoto,
                 DateTimeCreate = DateTime.UtcNow
             };
 

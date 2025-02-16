@@ -21,6 +21,7 @@ namespace SocialNetworkAPI.Models
         public string? LastName { get; set; }
         public string? Bio { get; set; }
         public byte[]? ProfilePicture { get; set; }
+        public byte[]? CoverPhoto { get; set; }
         public DateTime? Dob { get; set; }
         public bool IsOnline { get; set; }
         public DateTime DateTimeCreate { get; set; } = DateTime.UtcNow;
