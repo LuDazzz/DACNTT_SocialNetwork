@@ -24,7 +24,7 @@ namespace SocialNetworkAPI.Models
         public byte[]? CoverPhoto { get; set; }
         public DateTime? Dob { get; set; }
         public bool IsOnline { get; set; }
-        public DateTime DateTimeCreate { get; set; } = DateTime.UtcNow;
+        public DateTime DateTimeCreate { get; set; } = DateTime.Now;
         public string? Gender { get; set; }
         public string? ResetCode { get; set; }
         public bool IsPrivate { get; set; } = false;

@@ -165,7 +165,7 @@ namespace SocialNetworkAPI.Controllers
                 Dob = request.Dob,
                 ProfilePicture = defaultProfilePicture,
                 CoverPhoto = defualtCoverPhoto,
-                DateTimeCreate = DateTime.UtcNow
+                DateTimeCreate = DateTime.Now
             };
 
             _context.Users.Add(user);

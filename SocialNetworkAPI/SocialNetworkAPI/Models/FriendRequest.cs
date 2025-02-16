@@ -15,7 +15,7 @@ namespace SocialNetworkAPI.Models
         [ForeignKey("Receiver")]
         public int ReceiverID { get; set; }
 
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
         public virtual User? Sender { get; set; }
         public virtual User? Receiver { get; set; }

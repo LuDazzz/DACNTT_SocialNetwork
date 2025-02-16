@@ -25,11 +25,11 @@ namespace SocialNetworkAPI.Models
 
         public string? MediaURL { get; set; }
 
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
         public bool IsUpdated { get; set; } = false;
 
-        public DateTime? DateTimeUpdated { get; set; }
+        public DateTime? DateTimeUpdated { get; set; } = DateTime.Now;
 
         public int LikeCounter { get; set; } = 0;
 

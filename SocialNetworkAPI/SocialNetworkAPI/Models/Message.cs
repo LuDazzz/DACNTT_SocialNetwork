@@ -16,7 +16,7 @@ namespace SocialNetworkAPI.Models
         public int ReceiverID { get; set; }
 
         public string Content { get; set; } = string.Empty;
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+        public DateTime Timestamp { get; set; } = DateTime.Now;
 
         public virtual User? Sender { get; set; }
         public virtual User? Receiver { get; set; }

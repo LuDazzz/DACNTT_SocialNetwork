@@ -16,7 +16,7 @@ namespace SocialNetworkAPI.Models
         public int UserID2 { get; set; }
 
         [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Thiết lập quan hệ với bảng User
         public virtual User? User1 { get; set; }

@@ -372,9 +372,6 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<int>("FriendsCount")
                         .HasColumnType("int");
 
-                    b.Property<int>("FriendsCounter")
-                        .HasColumnType("int");
-
                     b.Property<string>("Gender")
                         .HasColumnType("longtext");
 

@@ -10,7 +10,7 @@ namespace SocialNetworkAPI.Models
         public int NotiID { get; set; }
 
         public string Content { get; set; } = string.Empty;
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
         [ForeignKey("User")]
         public int UserID { get; set; }

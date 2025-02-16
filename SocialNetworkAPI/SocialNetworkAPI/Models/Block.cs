@@ -16,7 +16,7 @@ namespace SocialNetworkAPI.Models
         public int UserID2 { get; set; }  // Người bị chặn
 
         [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Quan hệ với bảng User
         public virtual User? Blocker { get; set; }

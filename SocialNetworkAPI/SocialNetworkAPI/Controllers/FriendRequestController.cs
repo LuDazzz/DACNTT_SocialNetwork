@@ -64,7 +64,7 @@ namespace SocialNetworkAPI.Controllers
             {
                 UserID1 = request.SenderID, // Không để NULL
                 UserID2 = request.ReceiverID, // Không để NULL
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.Now
             };
 
             _context.Friendships.Add(friendship);

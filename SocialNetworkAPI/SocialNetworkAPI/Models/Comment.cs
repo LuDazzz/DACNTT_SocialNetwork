@@ -18,7 +18,7 @@ namespace SocialNetworkAPI.Models
 
         public string Content { get; set; } = string.Empty;
 
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
         public bool IsUpdated { get; set; } = false;
 

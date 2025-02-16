@@ -18,7 +18,7 @@ namespace SocialNetworkAPI.Models
         public string Reason { get; set; } = string.Empty;  // Lý do báo cáo
 
         [Required]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         // Thiết lập quan hệ với User
         public virtual User? Reporter { get; set; }

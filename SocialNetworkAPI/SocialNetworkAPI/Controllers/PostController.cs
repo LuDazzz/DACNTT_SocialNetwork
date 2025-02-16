@@ -127,7 +127,7 @@ namespace SocialNetworkAPI.Controllers
             post.MediaType = updatedPost.MediaType;
             post.MediaURL = updatedPost.MediaURL;
             post.IsUpdated = true;
-            post.DateTimeUpdated = DateTime.UtcNow;
+            post.DateTimeUpdated = DateTime.Now;
 
             _context.SaveChanges();
 
@@ -239,7 +239,7 @@ namespace SocialNetworkAPI.Controllers
 
             // Gán PostID trước khi thêm comment
             comment.PostID = postId;
-            comment.DateTime = DateTime.UtcNow;
+            comment.DateTime = DateTime.Now;
 
             _context.Comments.Add(comment);
             await _context.SaveChangesAsync();  // Lưu comment trước để có ID
