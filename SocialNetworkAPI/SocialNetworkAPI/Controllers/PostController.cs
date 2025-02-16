@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Asn1.Ocsp;
 using SocialNetworkAPI.Data;
 using SocialNetworkAPI.Models;
 using System;
@@ -259,6 +260,15 @@ namespace SocialNetworkAPI.Controllers
 
             // Cập nhật CommentCounter sau khi thêm comment
             post.CommentCounter = await _context.Comments.CountAsync(c => c.PostID == postId);
+            var notification = new Notification
+            {
+                UserID = post.UserID,  // Người nhận thông báo (chủ bài viết)
+                SenderID = comment.UserID,  // Người gửi thông báo (người bình luận)
+                Content = $"User {user.Username} commented on your post: {comment.Content}",  // Nội dung thông báo
+                DateTime = DateTime.Now
+            };
+
+            _context.Notifications.Add(notification);
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Comment added", comment, commentCount = post.CommentCounter });
