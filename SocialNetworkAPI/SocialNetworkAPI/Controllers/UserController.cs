@@ -20,28 +20,44 @@ namespace SocialNetworkAPI.Controllers
             _context = context;
         }
 
-        [HttpPost("updateProfilePictures")]
-        public async Task<IActionResult> UpdateProfilePictures([FromBody] UpdateProfilePicturesRequest request)
+        [HttpPost("update-avatar")]
+        public async Task<IActionResult> UpdateAvatar([FromForm] int userId, [FromForm] IFormFile profilePicture)
         {
-            var user = await _context.Users.FindAsync(request.UserID);
+            var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
-                return NotFound("User not found");
+                return NotFound("User not found.");
             }
 
-            if (request.Avatar != null && request.Avatar.Length > 0)
+            using (var memoryStream = new MemoryStream())
             {
-                user.ProfilePicture = request.Avatar;
-            }
-
-            if (request.CoverPhoto != null && request.CoverPhoto.Length > 0)
-            {
-                user.CoverPhoto = request.CoverPhoto;
+                await profilePicture.CopyToAsync(memoryStream);
+                user.ProfilePicture = memoryStream.ToArray();
             }
 
             await _context.SaveChangesAsync();
-            return Ok(new { Message = "Profile pictures updated successfully" });
+            return Ok(new { message = "Profile picture updated successfully." });
         }
+
+        [HttpPost("update-cover-photo")]
+        public async Task<IActionResult> UpdateCoverPhoto([FromForm] int userId, [FromForm] IFormFile coverPhoto)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            using (var memoryStream = new MemoryStream())
+            {
+                await coverPhoto.CopyToAsync(memoryStream);
+                user.CoverPhoto = memoryStream.ToArray();
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Cover photo updated successfully." });
+        }
+
 
         [HttpPost("updateBio")]
         public async Task<IActionResult> UpdateBio([FromBody] UpdateBioRequest request)
