@@ -50,6 +50,48 @@ namespace SocialNetworkAPI.Controllers
             return Ok(post);
         }
 
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchPosts(
+            [FromQuery] string? keyword,
+            [FromQuery] int? userId,
+            [FromQuery] string? mediaType,
+            [FromQuery] DateTime? startDate,
+            [FromQuery] DateTime? endDate)
+        {
+            var query = _context.Posts.AsQueryable();
+
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                query = query.Where(p => p.Content.Contains(keyword));
+            }
+
+            if (userId.HasValue)
+            {
+                query = query.Where(p => p.UserID == userId.Value);
+            }
+
+            if (!string.IsNullOrEmpty(mediaType))
+            {
+                query = query.Where(p => p.MediaType == mediaType);
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.DateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.DateTime <= endDate.Value);
+            }
+
+            var results = await query
+                .OrderByDescending(p => p.DateTime) // Sắp xếp theo ngày đăng
+                .ToListAsync();
+
+            return Ok(results);
+        }
+
 
         // Đăng bài viết
         [HttpPost]
