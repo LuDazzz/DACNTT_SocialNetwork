@@ -76,7 +76,10 @@ namespace SocialNetworkAPI.Controllers
                     p.MediaURL,
                     p.DateTime,
                     p.IsUpdated,
-                    p.DateTimeUpdated
+                    p.DateTimeUpdated,
+
+                    p.User!.Username,
+                    p.User.ProfilePicture
                 })
                 .ToListAsync();
 

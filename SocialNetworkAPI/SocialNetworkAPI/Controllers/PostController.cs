@@ -28,6 +28,7 @@ namespace SocialNetworkAPI.Controllers
                 return NotFound();
             }
             return Ok(post);
+
         }
 
         // Đăng bài viết

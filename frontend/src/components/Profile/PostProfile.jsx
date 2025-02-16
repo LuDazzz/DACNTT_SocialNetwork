@@ -2,21 +2,36 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { Divider } from "primereact/divider";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import { postSchema } from "../../utils/yupValidation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Toast } from "primereact/toast";
-import { createPostThread } from "../../redux/postSlice";
-import { useDispatch } from "react-redux";
+import { createPostThread, getPostByUserID } from "../../redux/postSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const PostProfile = () => {
   const dispatch = useDispatch();
   const toastRef = useRef(null);
   const [showDeletePost, setshowDeletePost] = useState(false);
   const [showEditPost, setShowEditPost] = useState(false);
+  const [postlist, setPostList] = useState([]);
   const userLoggedin = JSON.parse(localStorage.getItem("user"));
+  const postSelector = useSelector((state) => state.post.posts);
+  console.log("post se: ", postSelector);
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      const result = await dispatch(
+        getPostByUserID({ userID: userLoggedin.userID })
+      );
+      setPostList(result.payload.$values);
+      console.log(postlist);
+    };
+
+    fetchPost();
+  }, [dispatch]);
 
   //form post
   const {
@@ -52,6 +67,8 @@ const PostProfile = () => {
           life: 2000,
         },
       ]);
+      const updatedPosts = await dispatch(getPostByUserID({ userID: userLoggedin.userID }));
+      setPostList(updatedPosts.payload.$values);
     }
     reset();
   };
@@ -72,6 +89,22 @@ const PostProfile = () => {
           life: 2000,
         },
       ]);
+    }
+  };
+
+  //Handle display date time
+  const formatDateTime = (isoString) => {
+    const postDate = new Date(isoString);
+    const now = new Date();
+    const diffMs = now - postDate;
+    const diffHours = diffMs / (1000 * 60 * 60); // Chuyển đổi sang giờ
+  
+    if (diffHours < 24) {
+      return `${Math.floor(diffHours)}h`; // Ví dụ: 4h, 5h
+    } else if (diffHours < 48) {
+      return "Yesterday"; // Ví dụ: Yesterday
+    } else {
+      return postDate.toLocaleDateString(); // Hiển thị dạng ngày/tháng/năm
     }
   };
 
@@ -175,8 +208,8 @@ const PostProfile = () => {
         </form>
         {/* post  */}
         <div className="h-80 overflow-y-auto">
-          {[1, 2, 3, 4, 5].map((val) => (
-            <div key={val}>
+          {[...postlist].reverse().map((val) => (
+            <div key={val.$id}>
               <div className="flex mt-3">
                 {/* user card */}
                 <div className="w-1/6 flex justify-center">
@@ -189,15 +222,14 @@ const PostProfile = () => {
                   {/* info */}
                   <div className="flex gap-10 items-center">
                     <div className="font-bold h-full text- hover:underline">
-                      username
+                      {val.username}
                     </div>
-                    <div className="text-gray-500 h-full text-sm">4h</div>
+                    <div className="text-gray-500 h-full text-sm">{formatDateTime(val.dateTime)}</div>
                   </div>
                   {/* content */}
                   <div className="w-full">
                     <div className="text-sm">
-                      this is content this is content this is contentthis is
-                      content this is content this is content this is content
+                      {val.content}
                     </div>
                   </div>
                   {/* like, cmt, share */}

@@ -12,8 +12,6 @@ const Profile = () => {
   const userLoggedin = JSON.parse(localStorage.getItem("user"));
   const [checked, setChecked] = useState(false);
 
-  console.log(userLoggedin.IsPriate);
-
   function handleChange(e) {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));

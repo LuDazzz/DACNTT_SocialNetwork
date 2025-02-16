@@ -46,6 +46,7 @@ function ConfirmPass() {
     );
 
     if (!result.error) {
+
       toastRef.current?.show([
         {
           severity: "success",
@@ -59,6 +60,7 @@ function ConfirmPass() {
         navigate("/login", { replace: true });
       }, 2000);
     } else {
+      console.log(toastRef.current);
       toastRef.current?.show([
         {
           severity: "error",

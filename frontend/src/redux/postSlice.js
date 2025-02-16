@@ -3,7 +3,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../api/axiosInstances";
 
 const initialState = {
-  post: null,
+  posts: null,
   isLoading: false,
   error: null,
 };
@@ -19,6 +19,20 @@ export const createPostThread = createAsyncThunk(
           withCredentials: true,
         }
       );
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const getPostByUserID = createAsyncThunk(
+  "getPostByUserID",
+  async ({ userID }, { rejectWithValue }) => {
+    try {
+      const res = await API.get(`auth/getPostByUserId/${userID}`, {
+        withCredentials: true,
+      });
       return res.data;
     } catch (error) {
       return rejectWithValue(error.response.data.message);
@@ -43,10 +57,26 @@ const postSlice = createSlice({
       })
       .addCase(createPostThread.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.post = action.payload.post;
+        state.posts = action.payload.posts;
         state.error = null;
       })
       .addCase(createPostThread.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      // Get post cases
+      .addCase(getPostByUserID.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(getPostByUserID.fulfilled, (state, action) => {
+        // console.log("Redux nhận dữ liệu:", action.payload)
+        state.isLoading = false;
+        state.posts = action.payload;
+        state.error = null;
+      })
+      .addCase(getPostByUserID.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
