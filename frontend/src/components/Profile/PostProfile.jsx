@@ -8,8 +8,9 @@ import { Link } from "react-router";
 import { postSchema } from "../../utils/yupValidation";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Toast } from "primereact/toast";
-import { createPostThread, getPostByUserID } from "../../redux/postSlice";
-import { useDispatch, useSelector } from "react-redux";
+import { createPostThread, getPostByUserID } from "../../redux/post/postSlice";
+import { useDispatch } from "react-redux";
+import { getUserByUserID } from "../../redux/userSlice";
 
 const PostProfile = () => {
   const dispatch = useDispatch();
@@ -18,8 +19,7 @@ const PostProfile = () => {
   const [showEditPost, setShowEditPost] = useState(false);
   const [postlist, setPostList] = useState([]);
   const userLoggedin = JSON.parse(localStorage.getItem("user"));
-  const postSelector = useSelector((state) => state.post.posts);
-  console.log("post se: ", postSelector);
+  const [infoLogger, setInfoLogger] = useState();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -27,12 +27,20 @@ const PostProfile = () => {
         getPostByUserID({ userID: userLoggedin.userID })
       );
       setPostList(result.payload.$values);
-      console.log(postlist);
     };
 
+    const fetchUser = async () => {
+      const result = await dispatch(
+        getUserByUserID({ userID: userLoggedin.userID })
+      );
+      setInfoLogger(result.payload);
+    };
+
+    fetchUser();
     fetchPost();
   }, [dispatch]);
 
+  // console.log(infoLogger)
   //form post
   const {
     register: registerPost,
@@ -67,7 +75,9 @@ const PostProfile = () => {
           life: 2000,
         },
       ]);
-      const updatedPosts = await dispatch(getPostByUserID({ userID: userLoggedin.userID }));
+      const updatedPosts = await dispatch(
+        getPostByUserID({ userID: userLoggedin.userID })
+      );
       setPostList(updatedPosts.payload.$values);
     }
     reset();
@@ -98,7 +108,7 @@ const PostProfile = () => {
     const now = new Date();
     const diffMs = now - postDate;
     const diffHours = diffMs / (1000 * 60 * 60); // Chuyển đổi sang giờ
-  
+
     if (diffHours < 24) {
       return `${Math.floor(diffHours)}h`; // Ví dụ: 4h, 5h
     } else if (diffHours < 48) {
@@ -185,7 +195,10 @@ const PostProfile = () => {
           className="flex items-center justify-start pt-5 border-b-2 pb-4"
         >
           <div className="w-1/6 flex justify-center">
-            <img src={imgUrl} className="w-9 h-9 rounded-18px" />
+            <img
+              src={imgUrl}
+              className="w-9 h-9 rounded-18px"
+            />
           </div>
           <div className="w-3/5 flex items-center">
             <textarea
@@ -224,13 +237,13 @@ const PostProfile = () => {
                     <div className="font-bold h-full text- hover:underline">
                       {val.username}
                     </div>
-                    <div className="text-gray-500 h-full text-sm">{formatDateTime(val.dateTime)}</div>
+                    <div className="text-gray-500 h-full text-sm">
+                      {formatDateTime(val.dateTime)}
+                    </div>
                   </div>
                   {/* content */}
                   <div className="w-full">
-                    <div className="text-sm">
-                      {val.content}
-                    </div>
+                    <div className="text-sm">{val.content}</div>
                   </div>
                   {/* like, cmt, share */}
                   <div className="flex gap-10 text-gray-500 text-sm">

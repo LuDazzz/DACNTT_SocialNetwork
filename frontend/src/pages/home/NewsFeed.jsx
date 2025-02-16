@@ -1,18 +1,31 @@
 import { Button } from "primereact/button";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import Post from "../../components/Post";
 import { postSchema } from "../../utils/yupValidation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useDispatch } from "react-redux";
-import { createPostThread } from "../../redux/postSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { createPostThread } from "../../redux/post/postSlice";
 import { Toast } from "primereact/toast";
+import { getUserByUserID } from "../../redux/userSlice";
 
 const NewsFeed = () => {
   const dispatch = useDispatch();
   const toastRef = useRef(null);
   const userLoggedin = JSON.parse(localStorage.getItem("user"));
-  console.log(userLoggedin);
+  const [infoLogger, setInfoLogger] = useState();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const result = await dispatch(
+        getUserByUserID({ userID: userLoggedin.userID })
+      );
+      setInfoLogger(result.payload);
+      console.log(infoLogger.profilePicture);
+    };
+
+    fetchUser();
+  }, [dispatch]);
 
   const {
     register: postRegister,
@@ -84,12 +97,6 @@ const NewsFeed = () => {
     },
   ]);
 
-  const [userInfo, setUserInfo] = useState({
-    userid: 1,
-    imgUrl:
-      "https://images.theconversation.com/files/625049/original/file-20241010-15-95v3ha.jpg?ixlib=rb-4.1.0&rect=4%2C12%2C2679%2C1521&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip",
-  });
-
   // when hit follow
   const handleToggleFollow = (postId) => {
     setPost((prevPosts) =>
@@ -126,7 +133,10 @@ const NewsFeed = () => {
             className="flex items-center justify-between pt-5 pb-4 mx-10 "
           >
             <div className="w-fit flex justify-center">
-              <img src={userInfo.imgUrl} className="w-9 h-9 rounded-18px" />
+              <img
+                src={`data:image/jpeg;base64,${infoLogger.profilePicture}`}
+                className="w-9 h-9 rounded-18px border"
+              />
             </div>
             <div className="w-4/5 flex items-center">
               <textarea

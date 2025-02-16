@@ -1,21 +1,45 @@
 import { Button } from "primereact/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router";
 import "primeicons/primeicons.css";
 import { Dialog } from "primereact/dialog";
 import { InputText } from "primereact/inputtext";
 import { ToggleButton } from "primereact/togglebutton";
+import { getUserByUserID } from "../../redux/userSlice";
+import { useDispatch } from "react-redux";
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const [file, setFile] = useState();
   const [showEditProfile, setShowEditProfile] = useState(false);
   const userLoggedin = JSON.parse(localStorage.getItem("user"));
   const [checked, setChecked] = useState(false);
+  const [infoLogger, setInfoLogger] = useState();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const result = await dispatch(
+        getUserByUserID({ userID: userLoggedin.userID })
+      );
+      setInfoLogger(result.payload);
+    };
+
+    fetchUser();
+  }, [dispatch]);
+
+  console.log(infoLogger);
 
   function handleChange(e) {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));
   }
+
+  //Handle display date time
+  const formatDateTime = (isoString) => {
+    const postDate = new Date(isoString);
+
+    return postDate.toLocaleDateString(); 
+  };
 
   return (
     <>
@@ -86,7 +110,7 @@ const Profile = () => {
               <div>Date of Birth: </div>
               <InputText
                 disabled
-                value={"userLoggedin.dob"}
+                value={formatDateTime(infoLogger?.dob)}
                 unstyled
                 className="w-2/3 border-2 border-cyan-200 p-2 rounded-18px focus:outline-none hover:cursor-not-allowed"
               ></InputText>
@@ -102,7 +126,10 @@ const Profile = () => {
             <div className="flex justify-between">
               <div>Private: </div>
               <div className="">
-                <ToggleButton checked={checked} onChange={(e) => setChecked(e.value)}/>
+                <ToggleButton
+                  checked={checked}
+                  onChange={(e) => setChecked(e.value)}
+                />
               </div>
             </div>
           </div>
@@ -118,12 +145,13 @@ const Profile = () => {
             <div className="absolute right-5">
               <div className="relative">
                 <img
-                  src={
-                    file
-                      ? file
-                      : "https://images.theconversation.com/files/625049/original/file-20241010-15-95v3ha.jpg?ixlib=rb-4.1.0&rect=4%2C12%2C2679%2C1521&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip"
-                  }
-                  className="rounded-56px h-28 w-28"
+                  // src={
+                  //   file
+                  //     ? file
+                  //     : "https://images.theconversation.com/files/625049/original/file-20241010-15-95v3ha.jpg?ixlib=rb-4.1.0&rect=4%2C12%2C2679%2C1521&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip"
+                  // }
+                  src={`data:image/jpeg;base64,${infoLogger?.profilePicture}`}
+                  className="rounded-56px h-28 w-28 border"
                 />
                 <label className="absolute bottom-0 left-0 cursor-pointer">
                   <i className="pi pi-camera text-2xl border-2 p-1 rounded-2xl border-cyan-500 text-cyan-500 bg-white" />
