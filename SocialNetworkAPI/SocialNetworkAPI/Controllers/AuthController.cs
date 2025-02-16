@@ -77,7 +77,6 @@ namespace SocialNetworkAPI.Controllers
                     p.DateTime,
                     p.IsUpdated,
                     p.DateTimeUpdated,
-
                     p.User!.Username,
                     p.User!.ProfilePicture
                 })

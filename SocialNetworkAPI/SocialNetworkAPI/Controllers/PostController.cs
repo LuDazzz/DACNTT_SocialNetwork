@@ -188,6 +188,23 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Comment added", comment, commentCount = post.CommentCounter });
         }
 
+        [HttpGet("getCommentListByPostID/{postId}")]
+        public async Task<IActionResult> GetCommentListByPostID(int postId)
+        {
+            var comments = await _context.Comments
+                .Where(c => c.PostID == postId)
+                .OrderBy(c => c.DateTime) // Sắp xếp theo thời gian
+                .ToListAsync();
+
+            if (comments == null || comments.Count == 0)
+            {
+                return NotFound(new { message = "No comments found for this post." });
+            }
+
+            return Ok(comments);
+        }
+
+
 
         // Tương tác - Chia sẻ bài viết
         [HttpPost("share/{postId}")]

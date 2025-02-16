@@ -4,6 +4,7 @@ using SocialNetworkAPI.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace SocialNetworkAPI.Controllers
 {
@@ -34,5 +35,28 @@ namespace SocialNetworkAPI.Controllers
 
             return Ok("Unfriend successfully.");
         }
+
+        [HttpPost("isFriend")]
+        public async Task<IActionResult> IsFriend([FromBody] FriendshipRequest request)
+        {
+            if (request.UserID1 == request.UserID2)
+                return BadRequest("You can't check friendship status for the same user.");
+
+            bool isFriend = await _context.Friendships.AnyAsync(f =>
+                (f.UserID1 == request.UserID1 && f.UserID2 == request.UserID2) ||
+                (f.UserID1 == request.UserID2 && f.UserID2 == request.UserID1)); // Kiểm tra cả hai chiều kết bạn
+
+            return Ok(new { isFriend = isFriend });
+        }
+
+        // DTO để nhận dữ liệu từ body JSON
+        public class FriendshipRequest
+        {
+            public int UserID1 { get; set; }
+            public int UserID2 { get; set; }
+        }
+
+
     }
+
 }
