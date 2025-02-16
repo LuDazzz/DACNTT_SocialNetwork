@@ -9,16 +9,17 @@ namespace SocialNetworkAPI.Models
         [Key]
         public int MessageID { get; set; }
 
-        [ForeignKey("Sender")]
+        [Required]
         public int SenderID { get; set; }
 
-        [ForeignKey("Receiver")]
+        [Required]
         public int ReceiverID { get; set; }
 
+        [Required]
         public string Content { get; set; } = string.Empty;
-        public DateTime Timestamp { get; set; } = DateTime.Now;
 
-        public virtual User? Sender { get; set; }
-        public virtual User? Receiver { get; set; }
+        public string? MediaType { get; set; } // text, emoji, image, audio, video, location
+
+        public DateTime Timestamp { get; set; } = DateTime.Now;
     }
 }

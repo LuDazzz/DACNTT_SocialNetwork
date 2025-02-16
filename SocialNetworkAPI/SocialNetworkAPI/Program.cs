@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SocialNetworkAPI.Data;
+using SocialNetworkAPI.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,8 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.WriteIndented = true;
     });
 
+builder.Services.AddSignalR();
+
 
 var app = builder.Build();
 
@@ -52,10 +55,11 @@ if (app.Environment.IsDevelopment())
 
 
 
-app.UseCors(MyAllowSpecificOrigins);
+
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors(MyAllowSpecificOrigins);
 
 // ? Thêm CORS Middleware
 app.UseCors("AllowAll");
@@ -63,5 +67,10 @@ app.UseCors("AllowAll");
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+app.MapHub<MessageHub>("/messageHub");
+app.MapHub<NotificationHub>("/notificationHub");
+
 
 app.Run();

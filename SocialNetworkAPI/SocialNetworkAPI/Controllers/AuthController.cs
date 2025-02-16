@@ -174,20 +174,12 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Registration successful!" });
         }
 
-    
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
+            // Truy vấn đối tượng User thực tế từ cơ sở dữ liệu
             var user = await _context.Users
-                .Select(u => new
-                {
-                    u.UserID,
-                    u.Username,
-                    u.Email,
-                    u.Password,
-                    u.FirstName,
-                    u.LastName,            
-                })
                 .FirstOrDefaultAsync(u => u.Email == request.Email);
 
             if (user == null)
@@ -196,6 +188,14 @@ namespace SocialNetworkAPI.Controllers
             if (user.Password != request.Password)
                 return Unauthorized(new { message = "Invalid password." });
 
+            // Cập nhật trạng thái IsOnline và LastLogin
+            user.IsOnline = true;
+            user.LastLogin = DateTime.Now;
+
+            // Lưu thay đổi vào cơ sở dữ liệu
+            await _context.SaveChangesAsync();
+
+            // Trả về thông tin người dùng (không bao gồm mật khẩu)
             return Ok(new
             {
                 message = "Login successful",
@@ -209,6 +209,44 @@ namespace SocialNetworkAPI.Controllers
                 }
             });
         }
+
+        [HttpPost("logout/{userId}")]
+        public async Task<IActionResult> Logout(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId);
+
+            if (user == null)
+                return NotFound("User not found");
+
+            user.IsOnline = false;
+            user.LastLogin = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return Ok("Logout successful");
+        }
+
+        [HttpGet("friends-status/{userId}")]
+        public async Task<IActionResult> GetFriendsStatus(int userId)
+        {
+            var friends = await _context.Friendships
+                .Where(f => f.UserID1 == userId || f.UserID2 == userId)
+                .Select(f => f.UserID1 == userId ? f.UserID2 : f.UserID1)
+                .ToListAsync();
+
+            var friendStatuses = await _context.Users
+                .Where(u => friends.Contains(u.UserID))
+                .Select(u => new
+                {
+                    u.UserID,
+                    u.Username,
+                    u.IsOnline,
+                    LastLogin = u.LastLogin.HasValue ? u.LastLogin.Value.ToString("yyyy-MM-dd HH:mm:ss") : "Unknown"
+                })
+                .ToListAsync();
+
+            return Ok(friendStatuses);
+        }
+
 
 
         [HttpPost("reset-password-request")]

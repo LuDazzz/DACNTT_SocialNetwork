@@ -175,7 +175,20 @@ namespace SocialNetworkAPI.Controllers
                         // Nếu chưa like, thì thêm like
                         var newLike = new Like { PostID = postId, UserID = request.UserID };
                         _context.Likes.Add(newLike);
+
+                        var notification = new Notification
+                        {
+                            UserID = post.UserID,  // Người nhận thông báo (chủ bài viết)
+                            SenderID = request.UserID,  // Người gửi thông báo (người like)
+                            Content = $"User {request.UserID} liked your post!",
+                            DateTime = DateTime.Now
+                        };
+
+                        _context.Notifications.Add(notification);
                     }
+
+
+                    
 
                     // Lưu thay đổi vào database
                     await _context.SaveChangesAsync();

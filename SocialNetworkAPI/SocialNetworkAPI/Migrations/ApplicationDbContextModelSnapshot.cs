@@ -177,6 +177,9 @@ namespace SocialNetworkAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("MediaType")
+                        .HasColumnType("longtext");
+
                     b.Property<int>("ReceiverID")
                         .HasColumnType("int");
 
@@ -187,10 +190,6 @@ namespace SocialNetworkAPI.Migrations
                         .HasColumnType("datetime(6)");
 
                     b.HasKey("MessageID");
-
-                    b.HasIndex("ReceiverID");
-
-                    b.HasIndex("SenderID");
 
                     b.ToTable("Messages");
                 });
@@ -208,12 +207,16 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("datetime(6)");
 
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("SenderID")
+                        .HasColumnType("int");
+
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
                     b.HasKey("NotiID");
-
-                    b.HasIndex("UserID");
 
                     b.ToTable("Notifications");
                 });
@@ -381,6 +384,9 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<bool>("IsPrivate")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<DateTime?>("LastLogin")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<string>("LastName")
                         .HasColumnType("longtext");
 
@@ -493,36 +499,6 @@ namespace SocialNetworkAPI.Migrations
                     b.Navigation("Comment");
 
                     b.Navigation("Post");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SocialNetworkAPI.Models.Message", b =>
-                {
-                    b.HasOne("SocialNetworkAPI.Models.User", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SocialNetworkAPI.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("SocialNetworkAPI.Models.Notification", b =>
-                {
-                    b.HasOne("SocialNetworkAPI.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("User");
                 });

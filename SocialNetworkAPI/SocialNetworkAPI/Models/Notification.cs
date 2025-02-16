@@ -9,12 +9,17 @@ namespace SocialNetworkAPI.Models
         [Key]
         public int NotiID { get; set; }
 
-        public string Content { get; set; } = string.Empty;
-        public DateTime DateTime { get; set; } = DateTime.Now;
+        [Required]
+        public int UserID { get; set; }  // Người nhận thông báo
 
-        [ForeignKey("User")]
-        public int UserID { get; set; }
+        [Required]
+        public int SenderID { get; set; }  // Người gửi thông báo (người like bài viết,...)
 
-        public virtual User? User { get; set; }
+        [Required]
+        public string Content { get; set; }  // Nội dung thông báo
+
+        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+
+        public bool IsRead { get; set; } = false;
     }
 }
