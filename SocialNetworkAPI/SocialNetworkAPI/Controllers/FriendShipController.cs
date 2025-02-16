@@ -49,12 +49,58 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { isFriend = isFriend });
         }
 
+        [HttpGet("count/{userId}")]
+        public async Task<IActionResult> GetFriendsCount(int userId)
+        {
+            var count = await _context.Friendships
+                .Where(f => f.UserID1 == userId || f.UserID2 == userId)
+                .CountAsync();
+
+            await UpdateFriendsCounter(userId);
+
+            return Ok(new { UserId = userId, FriendsCount = count });
+        }
+
+
         // DTO để nhận dữ liệu từ body JSON
         public class FriendshipRequest
         {
             public int UserID1 { get; set; }
             public int UserID2 { get; set; }
         }
+
+        private async Task UpdateFriendsCounter(int userId)
+        {
+            var count = await _context.Friendships
+                .Where(f => f.UserID1 == userId || f.UserID2 == userId)
+                .CountAsync();
+
+            await _context.Users
+                .Where(u => u.UserID == userId)
+                .ExecuteUpdateAsync(u => u.SetProperty(x => x.FriendsCount, count));
+        }
+
+
+        [HttpDelete("unfriend")]
+        public async Task<IActionResult> Unfriend(int userId1, int userId2)
+        {
+            var friendship = await _context.Friendships
+                .FirstOrDefaultAsync(f =>
+                    (f.UserID1 == userId1 && f.UserID2 == userId2) ||
+                    (f.UserID1 == userId2 && f.UserID2 == userId1));
+
+            if (friendship == null)
+                return NotFound("Friendship not found.");
+
+            _context.Friendships.Remove(friendship);
+            await _context.SaveChangesAsync();
+
+            await UpdateFriendsCounter(userId1);
+            await UpdateFriendsCounter(userId2);
+
+            return Ok("Friendship removed.");
+        }
+      
 
 
     }

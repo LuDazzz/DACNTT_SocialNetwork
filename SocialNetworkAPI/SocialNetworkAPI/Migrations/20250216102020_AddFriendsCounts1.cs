@@ -5,23 +5,24 @@
 namespace SocialNetworkAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCoverPhoto : Migration
+    public partial class AddFriendsCounts1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<byte[]>(
-                name: "CoverPhoto",
+            migrationBuilder.AddColumn<int>(
+                name: "FriendsCount",
                 table: "Users",
-                type: "longblob",
-                nullable: true);
+                type: "int",
+                nullable: false,
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "CoverPhoto",
+                name: "FriendsCount",
                 table: "Users");
         }
     }

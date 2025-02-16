@@ -11,8 +11,8 @@ using SocialNetworkAPI.Data;
 namespace SocialNetworkAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250216085941_AddCoverPhoto")]
-    partial class AddCoverPhoto
+    [Migration("20250216102105_AddFriendsCounts2")]
+    partial class AddFriendsCounts2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -371,6 +371,12 @@ namespace SocialNetworkAPI.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("longtext");
+
+                    b.Property<int>("FriendsCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("FriendsCounter")
+                        .HasColumnType("int");
 
                     b.Property<string>("Gender")
                         .HasColumnType("longtext");

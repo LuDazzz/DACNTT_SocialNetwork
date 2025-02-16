@@ -27,7 +27,8 @@ namespace SocialNetworkAPI.Models
         public DateTime DateTimeCreate { get; set; } = DateTime.UtcNow;
         public string? Gender { get; set; }
         public string? ResetCode { get; set; }
-        public bool IsPrivate { get; set; } = false;       
+        public bool IsPrivate { get; set; } = false;
+        public int FriendsCount { get; set; } = 0;
 
         [JsonIgnore]
         public virtual ICollection<Post> Posts { get; set; } = new List<Post>();
