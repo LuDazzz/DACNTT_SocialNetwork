@@ -6,6 +6,7 @@ using SocialNetworkAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace SocialNetworkAPI.Controllers
 {
@@ -73,6 +74,40 @@ namespace SocialNetworkAPI.Controllers
 
             return Ok(new { Message = "Bio updated successfully" });
         }
+
+        [HttpGet("searchUser")]
+        public async Task<IActionResult> SearchUser([FromQuery] string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword))
+            {
+                return BadRequest(new { message = "Search keyword cannot be empty." });
+            }
+
+            try
+            {
+                var users = await _context.Users
+                    .Where(u => u.Username.Contains(keyword) ||
+                                u.FirstName.Contains(keyword) ||
+                                u.LastName.Contains(keyword))
+                    .Select(u => new
+                    {
+                        u.UserID,
+                        u.Username,
+                        u.FirstName,
+                        u.LastName,
+                        u.ProfilePicture
+                    })
+                    .ToListAsync();
+
+                return Ok(users);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while searching for users.", error = ex.Message });
+            }
+        }
+
+
     }
 
     public class UpdateProfilePicturesRequest
