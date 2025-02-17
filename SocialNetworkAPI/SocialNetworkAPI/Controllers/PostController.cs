@@ -398,6 +398,45 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Post reported successfully.", report = newReport });
         }
 
+        [HttpGet("getAllPosts")]
+        public async Task<IActionResult> GetAllPosts()
+        {
+            try
+            {
+                var posts = await _context.Posts
+                    .Include(p => p.User) // Include để lấy thông tin User
+                    .OrderByDescending(p => p.DateTime) // Sắp xếp bài viết mới nhất lên đầu
+                    .Select(p => new
+                    {
+                        p.PostID,
+                        p.Content,
+                        p.MediaType,
+                        p.MediaURL,
+                        p.DateTime,
+                        p.IsUpdated,
+                        p.DateTimeUpdated,
+                        p.LikeCounter,
+                        p.CommentCounter,
+                        p.ShareCounter, // Số lượt chia sẻ
+                        User = new
+                        {
+                            p.User.UserID,
+                            p.User.Username,
+                            p.User.FirstName,
+                            p.User.LastName,
+                            //p.User.ProfilePicture
+                        }
+                    })
+                    .ToListAsync();
+
+                return Ok(posts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving posts.", error = ex.Message });
+            }
+        }
+
 
     }
 }
