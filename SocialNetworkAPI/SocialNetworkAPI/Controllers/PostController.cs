@@ -314,6 +314,57 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Post shared successfully", shareCount = post.ShareCounter });
         }
 
+        [HttpGet("getShareByPostID/{postID}")]
+        public async Task<IActionResult> GetShareByPostID(int postID)
+        {
+            try
+            {
+                var post = await _context.Posts
+                    .Where(p => p.PostID == postID)
+                    .Select(p => new
+                    {
+                        p.PostID,
+                        p.ShareCounter
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (post == null)
+                {
+                    return NotFound(new { message = "Post not found." });
+                }
+
+                var shares = await _context.Shares
+                    .Where(s => s.PostID == postID)
+                    .OrderByDescending(s => s.DateTime)
+                    .ToListAsync(); // Chuyển dữ liệu về client trước khi xử lý tiếp
+
+                var userIDs = shares.Select(s => s.UserShareID).Distinct().ToList();
+                var users = await _context.Users
+                    .Where(u => userIDs.Contains(u.UserID))
+                    .ToDictionaryAsync(u => u.UserID, u => u.Username);
+
+                var shareResults = shares.Select(s => new
+                {
+                    s.ShareID,
+                    UserShare = users.ContainsKey(s.UserShareID) ? users[s.UserShareID] : "Unknown",
+                    s.DateTime
+                }).ToList();
+
+                return Ok(new
+                {
+                    post.PostID,
+                    post.ShareCounter,
+                    Shares = shareResults
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving shares.", error = ex.Message });
+            }
+        }
+
+
+
 
         // Báo cáo bài viết
         [HttpPost("report/{postId}")]

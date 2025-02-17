@@ -14,6 +14,7 @@ namespace SocialNetworkAPI.Models
 
         [ForeignKey("Post")]
         public int PostID { get; set; }
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
         public virtual User? User { get; set; }
         public virtual Post? Post { get; set; }

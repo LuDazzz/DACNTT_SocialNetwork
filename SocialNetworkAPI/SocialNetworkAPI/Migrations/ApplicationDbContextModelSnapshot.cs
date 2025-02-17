@@ -332,6 +332,9 @@ namespace SocialNetworkAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DateTime")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("PostID")
                         .HasColumnType("int");
 
