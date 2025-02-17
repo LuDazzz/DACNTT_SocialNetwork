@@ -398,13 +398,22 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Post reported successfully.", report = newReport });
         }
 
-        [HttpGet("getAllPosts")]
-        public async Task<IActionResult> GetAllPosts()
+        [HttpGet("getAllPosts/{currentUserId}")]
+        public async Task<IActionResult> GetAllPosts(int currentUserId)
         {
             try
             {
+                // Lấy danh sách bạn bè của currentUserId
+                var friendIds = await _context.Friendships
+                    .Where(f => f.UserID1 == currentUserId || f.UserID2 == currentUserId)
+                    .Select(f => f.UserID1 == currentUserId ? f.UserID2 : f.UserID1)
+                    .ToListAsync();
+
                 var posts = await _context.Posts
                     .Include(p => p.User) // Include để lấy thông tin User
+                    .Where(p =>
+                        p.UserID != currentUserId && // Không lấy bài viết của chính mình
+                        (!p.User.IsPrivate || friendIds.Contains(p.UserID))) // Lấy user công khai hoặc là bạn bè
                     .OrderByDescending(p => p.DateTime) // Sắp xếp bài viết mới nhất lên đầu
                     .Select(p => new
                     {
@@ -415,16 +424,16 @@ namespace SocialNetworkAPI.Controllers
                         p.DateTime,
                         p.IsUpdated,
                         p.DateTimeUpdated,
+                        p.ShareCounter,
                         p.LikeCounter,
                         p.CommentCounter,
-                        p.ShareCounter, // Số lượt chia sẻ
                         User = new
                         {
                             p.User.UserID,
                             p.User.Username,
                             p.User.FirstName,
                             p.User.LastName,
-                            //p.User.ProfilePicture
+                            p.User.ProfilePicture
                         }
                     })
                     .ToListAsync();
@@ -436,6 +445,7 @@ namespace SocialNetworkAPI.Controllers
                 return StatusCode(500, new { message = "An error occurred while retrieving posts.", error = ex.Message });
             }
         }
+
 
 
     }
