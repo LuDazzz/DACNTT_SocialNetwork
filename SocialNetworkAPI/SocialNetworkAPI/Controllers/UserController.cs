@@ -107,8 +107,60 @@ namespace SocialNetworkAPI.Controllers
             }
         }
 
+        [HttpPost("update-profile")]
+        public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateUserProfileRequest request)
+        {
+            var user = await _context.Users.FindAsync(request.UserID);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Kiểm tra nếu username được gửi lên và có trùng không
+            if (!string.IsNullOrEmpty(request.Username))
+            {
+                var existingUser = await _context.Users.AnyAsync(u => u.Username == request.Username && u.UserID != request.UserID);
+                if (existingUser)
+                {
+                    return BadRequest("Username already exists.");
+                }
+                user.Username = request.Username;
+            }
+
+            // Cập nhật nếu giá trị không null hoặc rỗng
+            if (!string.IsNullOrEmpty(request.FirstName))
+            {
+                user.FirstName = request.FirstName;
+            }
+
+            if (!string.IsNullOrEmpty(request.LastName))
+            {
+                user.LastName = request.LastName;
+            }
+
+            if (!string.IsNullOrEmpty(request.Bio))
+            {
+                user.Bio = request.Bio;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Profile updated successfully." });
+        }
 
     }
+
+    public class UpdateUserProfileRequest
+    {
+        public int UserID { get; set; }
+        public string? Username { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Bio { get; set; }
+    }
+
+
+
+
 
     public class UpdateProfilePicturesRequest
     {
