@@ -314,6 +314,9 @@ namespace SocialNetworkAPI.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<DateTime>("ReportTime")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("ReporterID")
                         .HasColumnType("int");
 
@@ -381,6 +384,9 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<string>("Gender")
                         .HasColumnType("longtext");
 
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<bool>("IsOnline")
                         .HasColumnType("tinyint(1)");
 
@@ -411,6 +417,21 @@ namespace SocialNetworkAPI.Migrations
                     b.HasKey("UserID");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserID = 15,
+                            DateTimeCreate = new DateTime(2025, 2, 18, 15, 17, 40, 212, DateTimeKind.Local).AddTicks(4086),
+                            Email = "admin@example.com",
+                            FriendsCount = 0,
+                            IsAdmin = true,
+                            IsOnline = false,
+                            IsPrivate = false,
+                            LastLogin = new DateTime(2025, 2, 18, 15, 17, 40, 212, DateTimeKind.Local).AddTicks(4101),
+                            Password = "admin123",
+                            Username = "admin"
+                        });
                 });
 
             modelBuilder.Entity("SocialNetworkAPI.Models.Block", b =>

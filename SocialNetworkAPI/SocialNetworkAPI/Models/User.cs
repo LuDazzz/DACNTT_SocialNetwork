@@ -30,6 +30,7 @@ namespace SocialNetworkAPI.Models
         public bool IsPrivate { get; set; } = false;
         public int FriendsCount { get; set; } = 0;
         public DateTime? LastLogin { get; set; } = DateTime.Now;
+        public bool IsAdmin { get; set; } = false;
 
         [JsonIgnore]
         public virtual ICollection<Post> Posts { get; set; } = new List<Post>();

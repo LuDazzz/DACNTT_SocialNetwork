@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using SocialNetworkAPI;
 using SocialNetworkAPI.Data;
 using SocialNetworkAPI.Hubs;
 
@@ -44,6 +46,23 @@ builder.Services.AddControllers()
 
 builder.Services.AddSignalR();
 
+/*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:SecretKey"]))
+        };
+    });
+
+builder.Services.AddAuthorization();*/
+
 
 var app = builder.Build();
 
@@ -64,7 +83,10 @@ app.UseCors(MyAllowSpecificOrigins);
 // ? Thêm CORS Middleware
 app.UseCors("AllowAll");
 
+app.UseAuthentication();
 app.UseAuthorization();
+//app.UseMiddleware<AdminAuthorizationMiddleware>();
+
 
 app.MapControllers();
 

@@ -126,3 +126,11 @@ D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAP
 D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.AspNetCore.SignalR.Protocols.Json.dll
 D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.Extensions.Features.dll
 D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\runtimes\browser\lib\net7.0\System.Text.Encodings.Web.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Abstractions.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.JsonWebTokens.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Logging.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll

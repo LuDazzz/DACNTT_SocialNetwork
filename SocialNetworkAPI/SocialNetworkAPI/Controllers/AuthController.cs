@@ -1,8 +1,13 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using SocialNetworkAPI.Data;
 using SocialNetworkAPI.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Configuration;
+
 //using System.IO.File.ReadAllBytes;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,12 +19,17 @@ namespace SocialNetworkAPI.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IConfiguration _configuration;
 
-        public AuthController(ApplicationDbContext context)
+        public AuthController(IConfiguration configuration, ApplicationDbContext context)
         {
+            _configuration = configuration;
             _context = context;
         }
+
+        private readonly ApplicationDbContext _context;
+
+        
         private byte[] GetDefaultProfilePicture()
         {
             string defaultImagePath = Path.Combine(Directory.GetCurrentDirectory(), "DefaultAvatar", "profile.jpg");
@@ -88,6 +98,9 @@ namespace SocialNetworkAPI.Controllers
                     p.DateTime,
                     p.IsUpdated,
                     p.DateTimeUpdated,
+                    p.LikeCounter,
+                    p.CommentCounter,
+                    p.ShareCounter,
                     p.User!.Username,
                     p.User!.ProfilePicture
                 })
@@ -195,10 +208,31 @@ namespace SocialNetworkAPI.Controllers
             // Lưu thay đổi vào cơ sở dữ liệu
             await _context.SaveChangesAsync();
 
-            // Trả về thông tin người dùng (không bao gồm mật khẩu)
+            // Tạo JWT Token
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.UserID.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Name, user.Username)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds
+            );
+
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
             return Ok(new
             {
                 message = "Login successful",
+                token = tokenString,
                 user = new
                 {
                     user.UserID,
@@ -209,6 +243,7 @@ namespace SocialNetworkAPI.Controllers
                 }
             });
         }
+
 
         [HttpPost("logout/{userId}")]
         public async Task<IActionResult> Logout(int userId)

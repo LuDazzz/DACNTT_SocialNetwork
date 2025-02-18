@@ -20,5 +20,7 @@ namespace SocialNetworkAPI.Models
         [Required]
         [MaxLength(500)]
         public string Reason { get; set; } = string.Empty;  // Lý do báo cáo
+
+        public DateTime ReportTime { get; set; } = DateTime.Now;
     }
 }

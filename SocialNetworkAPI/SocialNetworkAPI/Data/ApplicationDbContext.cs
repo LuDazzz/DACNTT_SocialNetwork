@@ -71,6 +71,16 @@ namespace SocialNetworkAPI.Data
                 .WithMany(u => u.Likes)
                 .HasForeignKey(l => l.UserID)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // Cấu hình cho admin
+            modelBuilder.Entity<User>().HasData(new User
+            {
+                UserID = 15,
+                Username = "admin",
+                Email = "admin@example.com",
+                Password = ("admin123"), // Mã hóa mật khẩu
+                IsAdmin = true
+            });
         }
     }
 }
