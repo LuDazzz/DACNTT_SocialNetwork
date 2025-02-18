@@ -37,7 +37,7 @@ export const editPost = createAsyncThunk(
       return rejectWithValue(error.response.data.message);
     }
   }
-); 
+);
 
 export const reportPost = createAsyncThunk(
   "reportPost",
@@ -45,10 +45,42 @@ export const reportPost = createAsyncThunk(
     try {
       const res = await API.post(
         `posts/report/${postID}`,
-        { userID, reason }, 
+        { userID, reason },
         {
           withCredentials: true,
         }
+      );
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const likePost = createAsyncThunk(
+  "likePost",
+  async ({ userId, postId }, { rejectWithValue }) => {
+    try {
+      const res = await API.post(
+        `posts/like/${postId}`,
+        { userId },
+        { withCredentials: true }
+      );
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
+export const checkLiked = createAsyncThunk(
+  "checkLiked",
+  async ({ userId, postId }, { rejectWithValue }) => {
+    try {
+      const res = await API.post(
+        "posts/HasLiked",
+        { postId, userId },
+        { withCredentials: true }
       );
       return res.data;
     } catch (error) {

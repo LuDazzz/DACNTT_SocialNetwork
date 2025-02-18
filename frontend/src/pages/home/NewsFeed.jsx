@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import Post from "../../components/Post";
 import { postSchema } from "../../utils/yupValidation";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { createPostThread } from "../../redux/post/postSlice";
 import { Toast } from "primereact/toast";
 import { getUserByUserID } from "../../redux/userSlice";
@@ -21,7 +21,6 @@ const NewsFeed = () => {
         getUserByUserID({ userID: userLoggedin.userID })
       );
       setInfoLogger(result.payload);
-      console.log(infoLogger.profilePicture);
     };
 
     fetchUser();
@@ -134,7 +133,7 @@ const NewsFeed = () => {
           >
             <div className="w-fit flex justify-center">
               <img
-                src={`data:image/jpeg;base64,${infoLogger.profilePicture}`}
+                src={`data:image/jpeg;base64,${infoLogger?.profilePicture}`}
                 className="w-9 h-9 rounded-18px border"
               />
             </div>

@@ -12,6 +12,7 @@ export const updateProfilePicture = createAsyncThunk(
   async ({ userID, profilePicture }, { rejectWithValue }) => {
     try {
         const res = await API.post("user/update-avatar")
+        return res.data
     } catch (error) {
         return rejectWithValue(error.response.data.message)
     }

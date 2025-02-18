@@ -28,6 +28,7 @@ const Profile = () => {
   }, [dispatch]);
 
   console.log(infoLogger);
+  console.log(userLoggedin)
 
   function handleChange(e) {
     console.log(e.target.files);
@@ -170,7 +171,7 @@ const Profile = () => {
               <div className="p-1 h-20 border-2 rounded-2xl overflow-auto">
                 this is bio this is bio this is bio this is bio this is bio
               </div>
-              <div className="text-gray-500 text-sm pb-3">3 friends</div>
+              <div className="text-gray-500 text-sm pb-3">{userLoggedin.FriendsCount ? "1 friend" : "0"}</div>
             </div>
             <div className="">
               <Button
@@ -182,6 +183,8 @@ const Profile = () => {
             </div>
           </div>
           <div className="h-2/3 w-full ">
+
+          {/* NavLink to element  */}
             <div className="flex">
               <NavLink
                 to="/profile"

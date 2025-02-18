@@ -20,3 +20,6 @@ const searchSlice = createSlice({
         builder
     }
 })
+
+export const {clearError} = searchSlice.actions
+export default searchSlice.reducer
