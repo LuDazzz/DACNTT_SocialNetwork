@@ -139,6 +139,8 @@ namespace SocialNetworkAPI.Controllers
         [HttpDelete("delete/{postId}")]
         public IActionResult DeletePost(int postId)
         {
+            var likes = _context.Likes.Where(l => l.PostID == postId);
+            _context.Likes.RemoveRange(likes);
             var post = _context.Posts.Find(postId);
             if (post == null) return NotFound("Post not found");
 
