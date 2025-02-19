@@ -179,12 +179,16 @@ namespace SocialNetworkAPI.Controllers
                         var newLike = new Like { PostID = postId, UserID = request.UserID };
                         _context.Likes.Add(newLike);
 
+                        var sender = await _context.Users.FindAsync(request.UserID);
+                        if (sender == null) return BadRequest("User not found.");
+
                         var notification = new Notification
                         {
                             UserID = post.UserID,  // Người nhận thông báo (chủ bài viết)
                             SenderID = request.UserID,  // Người gửi thông báo (người like)
-                            Content = $"User {request.UserID} liked your post!",
-                            DateTime = DateTime.Now
+                            Content = $"{sender.Username} liked your post!",
+                            DateTime = DateTime.Now,
+                            Type = "action"
                         };
 
                         _context.Notifications.Add(notification);
@@ -267,7 +271,8 @@ namespace SocialNetworkAPI.Controllers
                 UserID = post.UserID,  // Người nhận thông báo (chủ bài viết)
                 SenderID = comment.UserID,  // Người gửi thông báo (người bình luận)
                 Content = $"User {user.Username} commented on your post: {comment.Content}",  // Nội dung thông báo
-                DateTime = DateTime.Now
+                DateTime = DateTime.Now,
+                Type = "action"
             };
 
             _context.Notifications.Add(notification);

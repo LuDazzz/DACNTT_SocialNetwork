@@ -213,6 +213,10 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<int>("SenderID")
                         .HasColumnType("int");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<int>("UserID")
                         .HasColumnType("int");
 
@@ -422,13 +426,13 @@ namespace SocialNetworkAPI.Migrations
                         new
                         {
                             UserID = 15,
-                            DateTimeCreate = new DateTime(2025, 2, 18, 15, 17, 40, 212, DateTimeKind.Local).AddTicks(4086),
+                            DateTimeCreate = new DateTime(2025, 2, 19, 13, 24, 21, 165, DateTimeKind.Local).AddTicks(3051),
                             Email = "admin@example.com",
                             FriendsCount = 0,
                             IsAdmin = true,
                             IsOnline = false,
                             IsPrivate = false,
-                            LastLogin = new DateTime(2025, 2, 18, 15, 17, 40, 212, DateTimeKind.Local).AddTicks(4101),
+                            LastLogin = new DateTime(2025, 2, 19, 13, 24, 21, 165, DateTimeKind.Local).AddTicks(3061),
                             Password = "admin123",
                             Username = "admin"
                         });

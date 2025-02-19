@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;  // Thêm SignalR
 using SocialNetworkAPI.Models;
 using SocialNetworkAPI.Data;
+using SocialNetworkAPI.Hubs;  // Import NotificationHub
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,10 +15,12 @@ namespace SocialNetworkAPI.Controllers
     public class FriendRequestController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IHubContext<NotificationHub> _hubContext; // SignalR Hub
 
-        public FriendRequestController(ApplicationDbContext context)
+        public FriendRequestController(ApplicationDbContext context, IHubContext<NotificationHub> hubContext)
         {
             _context = context;
+            _hubContext = hubContext;
         }
 
         // Gửi lời mời kết bạn
@@ -34,29 +38,31 @@ namespace SocialNetworkAPI.Controllers
                 return BadRequest("The request already exists.");
 
             _context.FriendRequests.Add(request);
-            await _context.SaveChangesAsync();  // Lưu lời mời kết bạn trước
+            await _context.SaveChangesAsync();
 
-            // Kiểm tra lại user có tồn tại không trước khi tạo thông báo
-            var receiver = await _context.Users.FindAsync(request.ReceiverID);
             var sender = await _context.Users.FindAsync(request.SenderID);
-            if (receiver == null || sender == null)
+            var receiver = await _context.Users.FindAsync(request.ReceiverID);
+            if (sender == null || receiver == null)
                 return BadRequest("Sender or Receiver not found.");
 
-            // Tạo notification cho người nhận lời mời kết bạn
             var notification = new Notification
             {
-                UserID = request.ReceiverID,  // Người nhận lời mời
-                SenderID = request.SenderID,  // Người gửi lời mời
-                Content = $"{sender.Username} sent you a friend request.", // Hiển thị username
-                DateTime = DateTime.UtcNow
+                UserID = request.ReceiverID,
+                SenderID = request.SenderID,
+                Content = $"{sender.Username} sent you a friend request.",
+                DateTime = DateTime.Now,
+                Type = "FriendRequest"
             };
 
             _context.Notifications.Add(notification);
-            await _context.SaveChangesAsync();  // Lưu thông báo vào DB
+            await _context.SaveChangesAsync();
+
+            // 📢 Gửi thông báo real-time cho người nhận
+            await _hubContext.Clients.User(request.ReceiverID.ToString())
+                .SendAsync("ReceiveNotification", notification);
 
             return Ok("Friend request sent successfully.");
         }
-
 
         // Chấp nhận lời mời kết bạn
         [HttpPost("accept/{requestId}")]
@@ -68,21 +74,15 @@ namespace SocialNetworkAPI.Controllers
                 .FirstOrDefaultAsync(fr => fr.RequestID == requestId);
 
             if (request == null)
-            {
                 return NotFound(new { message = "Friend request not found" });
-            }
 
-            // Kiểm tra Sender và Receiver có tồn tại không
             if (request.Sender == null || request.Receiver == null)
-            {
                 return BadRequest(new { message = "Invalid friend request data" });
-            }
 
-            // Tạo mới Friendship
             var friendship = new Friendship
             {
-                UserID1 = request.SenderID, // Không để NULL
-                UserID2 = request.ReceiverID, // Không để NULL
+                UserID1 = request.SenderID,
+                UserID2 = request.ReceiverID,
                 CreatedAt = DateTime.Now
             };
 
@@ -91,47 +91,20 @@ namespace SocialNetworkAPI.Controllers
 
             var notification = new Notification
             {
-                UserID = request.SenderID,  // Người gửi lời mời nhận thông báo
-                SenderID = request.ReceiverID,  // Người chấp nhận lời mời
-                Content = $"User {request.ReceiverID} accepted your friend request.",
+                UserID = request.SenderID,
+                SenderID = request.ReceiverID,
+                Content = $"{request.Receiver.Username} accepted your friend request.",
                 DateTime = DateTime.Now
             };
 
             _context.Notifications.Add(notification);
+            await _context.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(new { message = "Friend request accepted" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error saving data", error = ex.Message });
-            }
+            // 📢 Gửi thông báo real-time cho người gửi lời mời
+            await _hubContext.Clients.User(request.SenderID.ToString())
+                .SendAsync("ReceiveNotification", notification);
+
+            return Ok(new { message = "Friend request accepted" });
         }
-        [HttpDelete("cancel/{requestId}")]
-        public async Task<IActionResult> CancelFriendRequest(int requestId)
-        {
-            var request = await _context.FriendRequests.FindAsync(requestId);
-
-            if (request == null)
-            {
-                return NotFound(new { message = "Friend request not found" });
-            }
-
-            _context.FriendRequests.Remove(request);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return Ok(new { message = "Friend request canceled" });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Error deleting data", error = ex.Message });
-            }
-        }
-
-
     }
 }
