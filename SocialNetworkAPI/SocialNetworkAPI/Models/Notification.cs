@@ -18,7 +18,7 @@ namespace SocialNetworkAPI.Models
         [Required]
         public string Content { get; set; }  // Nội dung thông báo
 
-        public DateTime DateTime { get; set; } = DateTime.UtcNow;
+        public DateTime DateTime { get; set; } = DateTime.Now;
 
         public string Type { get; set; } = string.Empty;
 

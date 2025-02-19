@@ -39,7 +39,7 @@ namespace SocialNetworkAPI.Controllers
                 ReceiverID = request.ReceiverID,
                 Content = request.Content,
                 MediaType = request.Type,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.Now
             };
 
             try
@@ -53,7 +53,8 @@ namespace SocialNetworkAPI.Controllers
                     UserID = request.ReceiverID,  // Người nhận tin nhắn
                     SenderID = request.SenderID,  // Người gửi tin nhắn
                     Content = "You have a new message.",
-                    DateTime = DateTime.UtcNow
+                    DateTime = DateTime.Now,
+                    Type = "message"
                 };
 
                 _context.Notifications.Add(notification);
@@ -86,15 +87,20 @@ namespace SocialNetworkAPI.Controllers
 
 
         // Lấy lịch sử tin nhắn giữa hai người dùng
-        [HttpGet("history/{userId}/{friendId}")]
-        public async Task<IActionResult> GetChatHistory(int userId, int friendId)
+        [HttpPost("history")]
+        public async Task<IActionResult> GetChatHistory([FromBody] ChatHistoryRequest request)
         {
+            if (request == null || request.UserId <= 0 || request.FriendId <= 0)
+            {
+                return BadRequest(new { message = "Invalid request parameters." });
+            }
+
             try
             {
                 // Lấy tất cả tin nhắn giữa hai người dùng
                 var messages = await _context.Messages
-                    .Where(m => (m.SenderID == userId && m.ReceiverID == friendId) ||
-                                (m.SenderID == friendId && m.ReceiverID == userId))
+                    .Where(m => (m.SenderID == request.UserId && m.ReceiverID == request.FriendId) ||
+                                (m.SenderID == request.FriendId && m.ReceiverID == request.UserId))
                     .OrderBy(m => m.Timestamp)
                     .Select(m => new
                     {
@@ -160,4 +166,10 @@ namespace SocialNetworkAPI.Controllers
         public string Type { get; set; }
         public DateTime Timestamp { get; set; }
     }
+    public class ChatHistoryRequest
+    {
+        public int UserId { get; set; }
+        public int FriendId { get; set; }
+    }
+
 }

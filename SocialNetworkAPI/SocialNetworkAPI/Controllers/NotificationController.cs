@@ -36,7 +36,7 @@ namespace SocialNetworkAPI.Controllers
             {
                 UserID = actionNoti.PostOwnerId, // Người nhận thông báo
                 Content = $"{actionNoti.Username} has interacted with your post.",
-                DateTime = DateTime.UtcNow,
+                DateTime = DateTime.Now,
                 IsRead = false,
                 Type = "action" // Đánh dấu loại thông báo
             };
@@ -64,7 +64,7 @@ namespace SocialNetworkAPI.Controllers
             {
                 UserID = friendNoti.ReceiverId, // Người nhận thông báo
                 Content = $"{friendNoti.Username} {friendNoti.Message}",
-                DateTime = DateTime.UtcNow,
+                DateTime = DateTime.Now,
                 IsRead = false,
                 Type = "friend"
             };
