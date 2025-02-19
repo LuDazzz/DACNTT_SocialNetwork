@@ -150,6 +150,38 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Profile updated successfully." });
         }
 
+        [HttpGet("getSharedPosts")]
+        public async Task<IActionResult> GetSharedPostsByUserID([FromQuery] int userId)
+        {
+            try
+            {
+                var sharedPosts = await _context.Shares
+                    .Where(s => s.UserShareID == userId)
+                    .Join(_context.Posts,
+                          s => s.PostID,
+                          p => p.PostID,
+                          (s, p) => new
+                          {
+                              p.PostID,
+                              p.UserID,
+                              p.Content,
+                              p.MediaType,
+                              p.MediaURL,
+                              p.DateTime,
+                              p.IsUpdated,
+                              p.DateTimeUpdated
+                          })
+                    .ToListAsync();
+
+                return Ok(sharedPosts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving shared posts.", error = ex.Message });
+            }
+        }
+
+
     }
 
     public class UpdateUserProfileRequest
