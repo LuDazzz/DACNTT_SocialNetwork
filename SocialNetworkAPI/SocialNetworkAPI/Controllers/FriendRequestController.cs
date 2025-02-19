@@ -65,20 +65,16 @@ namespace SocialNetworkAPI.Controllers
         }
 
         // Chấp nhận lời mời kết bạn
-        [HttpPost("accept/{requestId}")]
-        public async Task<IActionResult> AcceptFriendRequest(int requestId)
+        [HttpPost("accept")]
+        public async Task<IActionResult> AcceptFriendRequest([FromBody] AcceptFriendRequestDto request)
         {
-            var request = await _context.FriendRequests
-                .Include(fr => fr.Sender)
-                .Include(fr => fr.Receiver)
-                .FirstOrDefaultAsync(fr => fr.RequestID == requestId);
+            var friendRequest = await _context.FriendRequests
+                .FirstOrDefaultAsync(fr => fr.SenderID == request.SenderID && fr.ReceiverID == request.ReceiverID);
 
-            if (request == null)
+            if (friendRequest == null)
                 return NotFound(new { message = "Friend request not found" });
 
-            if (request.Sender == null || request.Receiver == null)
-                return BadRequest(new { message = "Invalid friend request data" });
-
+            // Tạo bản ghi mới trong bảng Friendships
             var friendship = new Friendship
             {
                 UserID1 = request.SenderID,
@@ -87,13 +83,14 @@ namespace SocialNetworkAPI.Controllers
             };
 
             _context.Friendships.Add(friendship);
-            _context.FriendRequests.Remove(request);
+            _context.FriendRequests.Remove(friendRequest); // Xóa lời mời kết bạn
 
+            // Thêm thông báo cho người gửi lời mời
             var notification = new Notification
             {
                 UserID = request.SenderID,
                 SenderID = request.ReceiverID,
-                Content = $"{request.Receiver.Username} accepted your friend request.",
+                Content = $"User {request.ReceiverID} accepted your friend request.",
                 DateTime = DateTime.Now
             };
 
@@ -104,7 +101,34 @@ namespace SocialNetworkAPI.Controllers
             await _hubContext.Clients.User(request.SenderID.ToString())
                 .SendAsync("ReceiveNotification", notification);
 
-            return Ok(new { message = "Friend request accepted" });
+            return Ok(new { message = "Friend request accepted successfully." });
         }
+        public class AcceptFriendRequestDto
+        {
+            public int SenderID { get; set; }
+            public int ReceiverID { get; set; }
+        }
+
+        [HttpPost("cancel")]
+        public async Task<IActionResult> CancelFriendRequest([FromBody] CancelFriendRequestDto request)
+        {
+            var friendRequest = await _context.FriendRequests
+                .FirstOrDefaultAsync(fr => fr.SenderID == request.SenderID && fr.ReceiverID == request.ReceiverID);
+
+            if (friendRequest == null)
+                return NotFound(new { message = "Friend request not found" });
+
+            _context.FriendRequests.Remove(friendRequest);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Friend request canceled successfully." });
+        }
+
+        public class CancelFriendRequestDto
+        {
+            public int SenderID { get; set; }
+            public int ReceiverID { get; set; }
+        }
+
     }
 }
