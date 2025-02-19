@@ -76,7 +76,7 @@ namespace SocialNetworkAPI.Controllers
         }
 
         [HttpGet("searchUser")]
-        public async Task<IActionResult> SearchUser([FromQuery] string keyword)
+        public async Task<IActionResult> SearchUser([FromQuery] string keyword, [FromQuery] int currentUserId)
         {
             if (string.IsNullOrWhiteSpace(keyword))
             {
@@ -86,9 +86,11 @@ namespace SocialNetworkAPI.Controllers
             try
             {
                 var users = await _context.Users
-                    .Where(u => u.Username.Contains(keyword) ||
-                                u.FirstName.Contains(keyword) ||
-                                u.LastName.Contains(keyword))
+                    .Where(u => (u.Username.Contains(keyword) ||
+                                 u.FirstName.Contains(keyword) ||
+                                 u.LastName.Contains(keyword)) &&
+                                u.UserID != currentUserId &&  // Loại bỏ chính user hiện tại
+                                !u.IsAdmin)  // Loại bỏ admin
                     .Select(u => new
                     {
                         u.UserID,
@@ -106,6 +108,7 @@ namespace SocialNetworkAPI.Controllers
                 return StatusCode(500, new { message = "An error occurred while searching for users.", error = ex.Message });
             }
         }
+
 
         [HttpPost("update-profile")]
         public async Task<IActionResult> UpdateUserProfile([FromBody] UpdateUserProfileRequest request)
