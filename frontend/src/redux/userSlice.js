@@ -36,6 +36,22 @@ export const getUserByUserID = createAsyncThunk(
   }
 );
 
+export const reportUser = createAsyncThunk(
+  "reportUser",
+  async ({ SenderID, UserIsReportedID, Reason }, { rejectWithValue }) => {
+    try {
+      const res = await API.post("report/user", {
+        SenderID,
+        UserIsReportedID,
+        Reason,
+      });
+      return res.data
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
 const userSlice = createSlice({
   name: "user",
   initialState,

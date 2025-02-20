@@ -17,6 +17,7 @@ import {
   likePost,
 } from "../../redux/post/PostActionSlice";
 import { InputTextarea } from "primereact/inputtextarea";
+import ItemPostProfile from "./PostProfile/ItemPostProfile";
 
 const PostProfile = () => {
   const dispatch = useDispatch();
@@ -93,16 +94,13 @@ const PostProfile = () => {
   };
 
   //form edit post
-  const {
-    register: registerEditPost,
-    handleSubmit: handleSubmitEditPost,
-    setValue,
-  } = useForm();
+  const { register: registerEditPost, handleSubmit: handleSubmitEditPost } =
+    useForm();
 
   //Update post
   const onUpdatePost = async (data) => {
     const result = await dispatch(
-      editPost({ postID: editPostID, content: data.editcontent })
+      editPost({ postID: data.editPostID, content: data.editcontent })
     );
     console.log(result);
     if (!result.error) {
@@ -120,6 +118,8 @@ const PostProfile = () => {
       setPostList(updatedPosts?.payload.$values);
       setShowEditPost(false);
     }
+
+    console.log(result.error)
   };
 
   //Delete post
@@ -141,15 +141,12 @@ const PostProfile = () => {
       setPostList(updatedPosts.payload.$values);
       setShowDeletePost(false);
     }
-  };
 
-  useEffect(() => {
-    setValue("editcontent", contentEditPost);
-  }, [contentEditPost, setValue]);
+    console.log(result.error)
+  };
 
   //Error when post empty
   const onError = (errors) => {
-    console.log(1);
     if (errors.postcontent) {
       toastRef.current.show([
         {
@@ -180,28 +177,12 @@ const PostProfile = () => {
 
   //Check like
   const isLikedPost = async (postId) => {
-    console.log("userid and postid " + userLoggedin.userID + " " + postId);
     const result = await dispatch(
       checkLiked({ userId: userLoggedin.userID, postId: postId })
     );
-    setIsLiked(result.payload.liked)
-    // if (!result.error) {
-    //   console.log(result)
-    // }
+    return result.payload.liked;
   };
 
-  //Like post
-  const likePostAction = async (postId) => {
-    const result = await dispatch(
-      likePost({ userId: userLoggedin.userID, postId: postId })
-    );
-
-    if (result.error) {
-      console.log("loi roi")
-    }
-  };
-
-  const [isLiked, setIsLiked] = useState(true);
   return (
     <>
       <Toast ref={toastRef} />
@@ -296,7 +277,7 @@ const PostProfile = () => {
           <div className="w-1/6 flex justify-center">
             <img
               src={`data:image/jpeg;base64,${infoLogger?.profilePicture}`}
-              className="w-9 h-9 rounded-18px"
+              className="w-9 h-9 rounded-18px border"
             />
           </div>
           <div className="w-3/5 flex items-center">
@@ -328,85 +309,17 @@ const PostProfile = () => {
           ) : (
             [...postlist].reverse().map((post) => (
               <div key={post.postID}>
-                <div className="flex mt-3">
-                  {/* user card */}
-                  <div className="w-1/6 flex justify-center">
-                    <div className="w-fit h-fit ">
-                      <img
-                        src={`data:image/jpeg;base64,${infoLogger?.profilePicture}`}
-                        className="w-9 h-9 rounded-18px"
-                      />
-                    </div>
-                  </div>
-                  {/* user post */}
-                  <div className="w-3/5">
-                    {/* info */}
-                    <div className="flex gap-10 items-center">
-                      <div className="font-bold h-full ">{post.username}</div>
-                      <div className="text-gray-500 h-full text-sm">
-                        {formatDateTime(post.dateTime)}
-                      </div>
-                    </div>
-                    {/* content */}
-                    <div className="w-full">
-                      <div className="text-sm">{post.content}</div>
-                    </div>
-                    {/* like, cmt, share */}
-                    <div className="flex gap-10 text-gray-500 text-sm">
-                      <div
-                        onClick={() => {
-                          console.log(post.postID);
-                          setLikePostID(post.postID);
-                          setIsLiked(!isLiked);
-                          console.log(isLikedPost(post.postID));
-                        }}
-                        className={`flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95 hover:cursor-pointer ${
-                          isLiked ? "text-blue-600 font-bold" : ""
-                        }`}
-                      >
-                        <div className="pi pi-thumbs-up" />
-                        <div>{post.LikeCounter ? post.LikeCounter : "0"}</div>
-                      </div>
-                      <Link
-                        to={`/comment?postId=${post.postID}`}
-                        query={{ postid: post.postID }}
-                        className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95"
-                      >
-                        <div className="pi pi-comments" />
-                        <div>
-                          {post.CommentCounter ? post.CommentCounter : "0"}
-                        </div>
-                      </Link>
-                      <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95">
-                        <div className="pi pi-share-alt" />
-                        <div>{post.ShareCounter ? post.ShareCounter : "0"}</div>
-                      </div>
-                    </div>
-                  </div>
-                  {/* Edit and Delete  */}
-                  <div className="w-1/5 flex justify-end">
-                    <div
-                      onClick={() => {
-                        setEditPostID(() => {
-                          return post.postID;
-                        });
-
-                        setContentEditPost(() => {
-                          return post.content;
-                        });
-                        setShowEditPost(true);
-                      }}
-                      className="pi pi-pencil h-fit rounded-full p-2 text-cyan-500 hover:bg-gray-200 hover:text-green-500 hover:cursor-pointer active:scale-95"
-                    />
-                    <div
-                      onClick={() => {
-                        setDeletePostID(post.postID);
-                        setShowDeletePost(true);
-                      }}
-                      className="pi pi-trash h-fit rounded-full p-2 text-cyan-500 hover:bg-gray-200 hover:text-red-500 hover:cursor-pointer active:scale-95"
-                    />
-                  </div>
-                </div>
+                <ItemPostProfile
+                  post={post}
+                  isLikedPost={isLikedPost}
+                  // likePostAction={likePostAction}
+                  formatDateTime={formatDateTime}
+                  infoLogger={infoLogger}
+                  onDeletePost={onDeletePost}
+                  // onUpdatePost={onUpdatePost}
+                  onError={onError}
+                  toastRef={toastRef}
+                />
                 <Divider />
               </div>
             ))

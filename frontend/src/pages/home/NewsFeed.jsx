@@ -8,38 +8,52 @@ import { useDispatch } from "react-redux";
 import { createPostThread } from "../../redux/post/postSlice";
 import { Toast } from "primereact/toast";
 import { getUserByUserID } from "../../redux/userSlice";
+import { getAllPostByUserID } from "../../redux/post/getPostNewsFeedSlice";
 
 const NewsFeed = () => {
   const dispatch = useDispatch();
   const toastRef = useRef(null);
-  const userLoggedin = JSON.parse(localStorage.getItem("user"));
-  const [infoLogger, setInfoLogger] = useState();
+  const [infoLogger, setInfoLogger] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
+  const [posts, setPosts] = useState()
 
   useEffect(() => {
+    //get info logged in user
     const fetchUser = async () => {
       const result = await dispatch(
-        getUserByUserID({ userID: userLoggedin.userID })
+        getUserByUserID({ userID: infoLogger.userID })
       );
       setInfoLogger(result.payload);
     };
 
+    //get post for newsfeed
+    const fetchAllPost = async () => {
+      const result = await dispatch(
+        getAllPostByUserID({ userID: infoLogger.userID })
+      );
+      setPosts(result.payload.$values)
+    };
+
+    fetchAllPost()
     fetchUser();
   }, [dispatch]);
 
+  //form new post
   const {
     register: postRegister,
     handleSubmit: postHandleSubmit,
     reset,
   } = useForm({
     resolver: yupResolver(postSchema),
-    defaultValues: { userID: userLoggedin.userID },
+    defaultValues: { userID: infoLogger.userID },
   });
 
   //submit post
   const onSubmitPost = async (data) => {
     const result = await dispatch(
       createPostThread({
-        userID: userLoggedin.userID,
+        userID: infoLogger.userID,
         content: data.postcontent,
       })
     );
@@ -80,45 +94,6 @@ const NewsFeed = () => {
     }
   };
 
-  const [posts, setPost] = useState([
-    {
-      id: 1,
-      imgurl:
-        "https://images.theconversation.com/files/625049/original/file-20241010-15-95v3ha.jpg?ixlib=rb-4.1.0&rect=4%2C12%2C2679%2C1521&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip",
-      username: "dat1",
-      time: "4h",
-      content: "Trời hôm nay thật đẹp, liệu có ai muốn đi chơi không?",
-      likeNum: 2,
-      cmtNum: 3,
-      shareNum: 1,
-      isLiked: false,
-      isFollow: false,
-    },
-  ]);
-
-  // when hit follow
-  const handleToggleFollow = (postId) => {
-    setPost((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId ? { ...post, isFollow: !post.isFollow } : post
-      )
-    );
-  };
-
-  //when hit like
-  const handleToggleLike = (postId) => {
-    setPost((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId
-          ? {
-              ...post,
-              isLiked: !post.isLiked,
-            }
-          : post
-      )
-    );
-  };
-
   return (
     <>
       <Toast ref={toastRef} />
@@ -155,12 +130,12 @@ const NewsFeed = () => {
             />
           </form>
           <div>
-            {posts.map((post) => (
+            {posts?.map((post) => (
               <Post
-                key={post.id}
+                key={post.postID}
                 post={post}
-                onToggleFollow={handleToggleFollow}
-                onToggleLike={handleToggleLike}
+                infoLogger={infoLogger}
+                toastRef={toastRef}
               />
             ))}
           </div>

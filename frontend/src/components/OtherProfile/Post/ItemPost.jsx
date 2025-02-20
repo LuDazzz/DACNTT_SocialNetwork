@@ -1,31 +1,32 @@
 /* eslint-disable react/prop-types */
 import "primeicons/primeicons.css";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Menu } from "primereact/menu";
+
 import { Toast } from "primereact/toast";
 import { Divider } from "primereact/divider";
-import { createSearchParams, Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
 import {
   checkLiked,
   likePost,
   reportPost,
-} from "../redux/post/PostActionSlice";
-import { getPostByPostID } from "../redux/post/postSlice";
+  sharePost,
+} from "../../../redux/post/PostActionSlice";
+import { getPostByPostID } from "../../../redux/post/postSlice";
 import { Dialog } from "primereact/dialog";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useForm } from "react-hook-form";
 import { Button } from "primereact/button";
-import { reportSchema } from "../utils/yupValidation";
+import { reportSchema } from "../../../utils/yupValidation";
 import { yupResolver } from "@hookform/resolvers/yup";
 
-const Post = ({ post, infoLogger, toastRef }) => {
+const ItemPost = ({ post, infoLogger, toastRef }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [newPost, setNewPost] = useState(post);
   const [isLiked, setIsLiked] = useState();
   const [showReport, setShowReport] = useState(false);
-  const [contentReport, setContentReport] = useState();
+  const [contentReport, setContentReport] = useState("");
 
   //Check like
   const isLikedPost = useCallback(async (postId, infoLogger) => {
@@ -111,6 +112,33 @@ const Post = ({ post, infoLogger, toastRef }) => {
     }
   };
 
+  //share Post
+  const onSharePost = async () => {
+    const result = await dispatch(
+      sharePost({ userID: infoLogger.userID, postID: post.postID })
+    );
+
+    if (!result.error) {
+      toastRef.current.show([
+        {
+          severity: "success",
+          summary: "Success",
+          detail: "Admin will consider your report!",
+          life: 2000,
+        },
+      ]);
+    } else {
+      toastRef.current.show([
+        {
+          severity: "error",
+          summary: "Error",
+          detail: result.payload,
+          life: 2000,
+        },
+      ]);
+    }
+  };
+
   //form report
   const {
     register: regRport,
@@ -173,7 +201,7 @@ const Post = ({ post, infoLogger, toastRef }) => {
         <div className="flex justify-center">
           <div className="w-fit h-fit relative">
             <img
-              src={`data:image/jpeg;base64,${post.user.profilePicture}`}
+              src={`data:image/jpeg;base64,${post.profilePicture}`}
               className="w-9 h-9 rounded-18px border"
             />
             <div
@@ -188,16 +216,7 @@ const Post = ({ post, infoLogger, toastRef }) => {
         <div className="w-4/5">
           {/* info */}
           <div className="flex gap-10 items-center">
-            <div
-              onClick={() => {
-                navigate(
-                  `otherprofile/${post.user.username}/${post.user.userID}`
-                );
-              }}
-              className="font-bold h-full text- hover:underline hover:cursor-pointer active:scale-95"
-            >
-              {post.user.username}
-            </div>
+            <div className="font-bold h-full">{post.username}</div>
             <div className="text-gray-500 h-full text-sm">
               {formatDateTime(post.dateTime)}
             </div>
@@ -227,7 +246,7 @@ const Post = ({ post, infoLogger, toastRef }) => {
               <div className="pi pi-comments" />
               <div>{post.commentCounter}</div>
             </Link>
-            <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 hover:cursor-pointer active:scale-95">
+            <div onClick={onSharePost} className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 hover:cursor-pointer active:scale-95">
               <div className="pi pi-share-alt" />
               <div>{post.shareCounter}</div>
             </div>
@@ -246,4 +265,4 @@ const Post = ({ post, infoLogger, toastRef }) => {
   );
 };
 
-export default Post;
+export default ItemPost;

@@ -7,29 +7,39 @@ import { InputText } from "primereact/inputtext";
 import { ToggleButton } from "primereact/togglebutton";
 import { getUserByUserID } from "../../redux/userSlice";
 import { useDispatch } from "react-redux";
+import { countFriendByUserID } from "../../redux/Profile/countFriendSlice";
+import { useForm } from "react-hook-form";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const [file, setFile] = useState();
   const [showEditProfile, setShowEditProfile] = useState(false);
-  const userLoggedin = JSON.parse(localStorage.getItem("user"));
   const [checked, setChecked] = useState(false);
-  const [infoLogger, setInfoLogger] = useState();
+  const [infoLogger, setInfoLogger] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
+  const [friendCount, setFriendCount] = useState(0);
 
   useEffect(() => {
     const fetchUser = async () => {
       const result = await dispatch(
-        getUserByUserID({ userID: userLoggedin.userID })
+        getUserByUserID({ userID: infoLogger.userID })
       );
       setInfoLogger(result.payload);
     };
 
+    const fetchFriendCount = async () => {
+      const result = await dispatch(
+        countFriendByUserID({ userID: infoLogger.userID })
+      );
+      setFriendCount(result.payload.friendsCount)
+    };
+
+    fetchFriendCount()
     fetchUser();
   }, [dispatch]);
 
-  console.log(infoLogger);
-  console.log(userLoggedin)
-
+  //get link image
   function handleChange(e) {
     console.log(e.target.files);
     setFile(URL.createObjectURL(e.target.files[0]));
@@ -39,8 +49,11 @@ const Profile = () => {
   const formatDateTime = (isoString) => {
     const postDate = new Date(isoString);
 
-    return postDate.toLocaleDateString(); 
+    return postDate.toLocaleDateString();
   };
+
+  //edit profile form
+  const {register: regEditProfile, handleSubmit: handleSubmitEditProfile} = useForm({})
 
   return (
     <>
@@ -53,28 +66,12 @@ const Profile = () => {
           modal
           draggable={false}
           className="w-1/3 h-fit"
-          footer={
-            <div className="gap-5 flex justify-end">
-              <Button
-                label="Cancel"
-                icon="pi pi-times"
-                onClick={() => setShowEditProfile(false)}
-                className="bg-cyan-500 text-white border-none hover:opacity-80"
-              />
-              <Button
-                label="Update"
-                icon="pi pi-check"
-                onClick={() => setShowEditProfile(false)}
-                className="bg-green-500 text-white border-none hover:opacity-80"
-              />
-            </div>
-          }
         >
           <div className="border-2 w-full p-2 flex flex-col gap-2">
             <div className="flex justify-between">
               <div>Username: </div>
               <InputText
-                defaultValue={userLoggedin.username}
+                defaultValue={infoLogger.username}
                 unstyled
                 maxLength={20}
                 className="w-2/3 border-2 border-cyan-200 p-2 rounded-18px focus:outline-none"
@@ -84,7 +81,7 @@ const Profile = () => {
               <div>First Name: </div>
               <InputText
                 maxLength={30}
-                defaultValue={userLoggedin.firstName}
+                defaultValue={infoLogger.firstName}
                 unstyled
                 className="w-2/3 border-2 border-cyan-200 p-2 rounded-18px focus:outline-none"
               ></InputText>
@@ -93,7 +90,7 @@ const Profile = () => {
               <div>Last Name: </div>
               <InputText
                 maxLength={30}
-                defaultValue={userLoggedin.lastName}
+                defaultValue={infoLogger.lastName}
                 unstyled
                 className="w-2/3 border-2 border-cyan-200 p-2 rounded-18px focus:outline-none"
               ></InputText>
@@ -102,7 +99,7 @@ const Profile = () => {
               <div>Email: </div>
               <InputText
                 disabled
-                value={userLoggedin.email}
+                value={infoLogger.email}
                 unstyled
                 className="w-2/3 border-2 border-cyan-200 p-2 rounded-18px focus:outline-none hover:cursor-not-allowed"
               ></InputText>
@@ -120,7 +117,7 @@ const Profile = () => {
               <div>Bio: </div>
               <textarea
                 rows={3}
-                defaultValue={"this is bio this is bio this is bio"}
+                defaultValue={infoLogger.bio}
                 className="w-2/3 border-2 border-cyan-200 p-2 rounded-18px resize-none focus:outline-none"
               ></textarea>
             </div>
@@ -128,12 +125,26 @@ const Profile = () => {
               <div>Private: </div>
               <div className="">
                 <ToggleButton
-                  checked={checked}
+                  checked={infoLogger.isPrivate}
                   onChange={(e) => setChecked(e.value)}
                 />
               </div>
             </div>
           </div>
+          <div className="gap-5 flex justify-end">
+              <Button
+                label="Cancel"
+                icon="pi pi-times"
+                onClick={() => setShowEditProfile(false)}
+                className="bg-cyan-500 text-white border-none hover:opacity-80"
+              />
+              <Button
+                label="Update"
+                icon="pi pi-check"
+                onClick={() => setShowEditProfile(false)}
+                className="bg-green-500 text-white border-none hover:opacity-80"
+              />
+            </div>
         </Dialog>
       </form>
 
@@ -163,15 +174,17 @@ const Profile = () => {
               <div className="flex flex-col">
                 <div className="flex gap-1">
                   <div className="text-xl font-bold">
-                    {userLoggedin.lastName} {userLoggedin.firstName}
+                    {infoLogger.lastName} {infoLogger.firstName}
                   </div>
                 </div>
-                <div>{userLoggedin.username}</div>
+                <div>{infoLogger.username}</div>
               </div>
               <div className="p-1 h-20 border-2 rounded-2xl overflow-auto">
-                this is bio this is bio this is bio this is bio this is bio
+                {infoLogger.bio}
               </div>
-              <div className="text-gray-500 text-sm pb-3">{userLoggedin.FriendsCount ? "1 friend" : "0"}</div>
+              <div className="text-gray-500 text-sm pb-3">
+                {friendCount + " friends"}
+              </div>
             </div>
             <div className="">
               <Button
@@ -183,8 +196,7 @@ const Profile = () => {
             </div>
           </div>
           <div className="h-2/3 w-full ">
-
-          {/* NavLink to element  */}
+            {/* NavLink to element  */}
             <div className="flex">
               <NavLink
                 to="/profile"

@@ -1,37 +1,16 @@
 import "primeicons/primeicons.css";
 import { Link } from "react-router";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { Toast } from "primereact/toast";
 import { useSearchParams } from "react-router";
 import CommentDetail from "../../components/CommentDetail";
-import { Divider } from "primereact/divider";
 import { useDispatch } from "react-redux";
 import { getPostByPostID } from "../../redux/post/postSlice";
 import { InputTextarea } from "primereact/inputtextarea";
 import "primeicons/primeicons.css";
 import { getComment, sendComment } from "../../redux/Comment/commentSlice";
 import { useForm } from "react-hook-form";
-
-const commentArr = [
-  {
-    cmtid: 1,
-    userid: 1,
-    content: "Tôi nè bạn",
-    post: {
-      id: 1,
-      imgurl:
-        "https://images.theconversation.com/files/625049/original/file-20241010-15-95v3ha.jpg?ixlib=rb-4.1.0&rect=4%2C12%2C2679%2C1521&q=20&auto=format&w=320&fit=clip&dpr=2&usm=12&cs=strip",
-      username: "521h0441",
-      time: "4h",
-      content: "datatatatatatattatatatatatatatatatata atatat tat at at at a",
-      likeNum: 2,
-      cmtNum: 3,
-      shareNum: 3,
-      isLiked: false,
-      isFollow: false,
-    },
-  },
-];
+import { checkLiked, likePost } from "../../redux/post/PostActionSlice";
 
 const Comment = () => {
   const dispatch = useDispatch();
@@ -39,8 +18,21 @@ const Comment = () => {
   const postid = searchParams.get("postId");
   const toastRef = useRef(null);
   const [postInfo, setPostInfo] = useState();
-  const userLoggedin = JSON.parse(localStorage.getItem("user"));
+  const [infoLogger, setInfoLogger] = useState(
+    JSON.parse(localStorage.getItem("user"))
+  );
   const [commentList, setCommentList] = useState();
+  const [isLike, setIsLike] = useState();
+
+  console.log(isLike);
+
+  //Check like
+  const isLikedPost = useCallback(async (postId, infoLogger) => {
+    const result = await dispatch(
+      checkLiked({ userId: infoLogger.userID, postId: postId })
+    );
+    return result.payload.liked;
+  });
 
   useEffect(() => {
     const getPostInfo = async () => {
@@ -56,9 +48,22 @@ const Comment = () => {
       }
     };
 
+    isLikedPost(postid, infoLogger).then((data) => setIsLike(data));
     getCommentByPostID();
     getPostInfo();
-  }, [dispatch, postid]);
+  }, [dispatch, infoLogger]);
+
+  //Like post
+  const likePostAction = async (postId) => {
+    const result = await dispatch(
+      likePost({ userId: infoLogger.userID, postId: postId })
+    );
+    const postInfoFetch = await dispatch(
+      getPostByPostID({ postID: postInfo?.postID })
+    );
+    setPostInfo(postInfoFetch.payload);
+    isLikedPost(postid, infoLogger).then((data) => setIsLike(data));
+  };
 
   //Post a Comment useForm
   const {
@@ -67,11 +72,12 @@ const Comment = () => {
     reset,
   } = useForm();
 
+  //submit comment
   const onSendCommentSubmit = async (data) => {
     const result = await dispatch(
       sendComment({
         postID: postid,
-        userID: userLoggedin.userID,
+        userID: infoLogger.userID,
         content: data.contentComment,
       })
     );
@@ -102,10 +108,8 @@ const Comment = () => {
 
   //Check is the owner of Post
   const isOwner = () => {
-    return postInfo?.user.userID === userLoggedin.userID;
+    return postInfo?.user.userID === infoLogger.userID;
   };
-
-  console.log(isOwner());
 
   return (
     <>
@@ -152,28 +156,22 @@ const Comment = () => {
                 {/* Like share cmt  */}
                 <div className="flex gap-10 text-gray-500 text-sm pb-1">
                   <div
-                    // onClick={() => onToggleLike(postId)}
-                    className={`flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95 ${
+                    onClick={() => likePostAction(postInfo?.postID)}
+                    className={`flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 hover:cursor-pointer active:scale-95 ${
                       // eslint-disable-next-line no-constant-condition
-                      false ? "text-blue-600 font-bold" : ""
+                      isLike ? "text-blue-600 font-bold" : ""
                     }`}
                   >
                     <div className="pi pi-thumbs-up" />
-                    <div>
-                      {postInfo?.LikeCounter ? postInfo?.LikeCounter : 0}
-                    </div>
+                    <div>{postInfo?.likeCounter}</div>
                   </div>
-                  <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95">
+                  <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200">
                     <div className="pi pi-comments" />
-                    <div>
-                      {postInfo?.CommentCounter ? postInfo?.LikeCounter : 0}
-                    </div>
+                    <div>{postInfo?.commentCounter}</div>
                   </div>
-                  <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95">
+                  <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 hover:cursor-pointer active:scale-95">
                     <div className="pi pi-share-alt" />
-                    <div>
-                      {postInfo?.ShareCounter ? postInfo?.LikeCounter : 0}
-                    </div>
+                    <div>{postInfo?.shareCounter}</div>
                   </div>
                 </div>
               </div>
@@ -190,7 +188,7 @@ const Comment = () => {
                   <div>This post doesn&apos;t have comment</div>
                 </div>
               ) : (
-                commentList?.map((comment) => (
+                commentList?.reverse().map((comment) => (
                   <div key={comment.commentID}>
                     <CommentDetail comment={comment} />
                   </div>

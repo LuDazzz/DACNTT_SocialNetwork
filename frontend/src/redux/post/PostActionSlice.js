@@ -41,11 +41,11 @@ export const editPost = createAsyncThunk(
 
 export const reportPost = createAsyncThunk(
   "reportPost",
-  async ({ postID, userID, reason }, { rejectWithValue }) => {
+  async ({ postID, reporterID, reason }, { rejectWithValue }) => {
     try {
       const res = await API.post(
         `posts/report/${postID}`,
-        { userID, reason },
+        { reporterID, reason },
         {
           withCredentials: true,
         }
@@ -89,6 +89,18 @@ export const checkLiked = createAsyncThunk(
   }
 );
 
+export const sharePost = createAsyncThunk(
+  "sharePost",
+  async ({ postID, userID }, { rejectWithValue }) => {
+    try {
+      const res = await API.post(`posts/share/${postID}`, { userID });
+      return res.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data.message);
+    }
+  }
+);
+
 const postActionSlice = createSlice({
   name: "postAction",
   initialState,
@@ -125,6 +137,34 @@ const postActionSlice = createSlice({
         state.error = null;
       })
       .addCase(editPost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      //report case
+      .addCase(reportPost.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(reportPost.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(reportPost.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+
+      //share case
+      .addCase(sharePost.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(sharePost.fulfilled, (state) => {
+        state.isLoading = false;
+        state.error = null;
+      })
+      .addCase(sharePost.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });

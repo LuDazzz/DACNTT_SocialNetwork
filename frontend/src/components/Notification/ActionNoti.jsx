@@ -17,12 +17,12 @@ function ActionNoti() {
                 <div className="font-bold hover:underline hover:cursor-pointer">
                   username
                 </div>
-                <div>&nbsp;has liked/commented your post! </div>
+                <div>&nbsp;has interacted your post! </div>
               </div>
               <div className="text-gray-500 pl-5">4h</div>
             </div>
             <div className="flex items-center">
-              <div className="pi pi-ellipsis-h text-sm p-1 rounded-xl hover:bg-gray-300"></div>
+              <div className="pi pi-trash text-sm p-1 rounded-xl hover:bg-gray-300"></div>
             </div>
           </div>
         ))}

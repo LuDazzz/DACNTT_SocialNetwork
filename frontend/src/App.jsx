@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Outlet } from "react-router";
+import { BrowserRouter, Routes, Route } from "react-router";
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 import ForgetPass from "./pages/auth/ForgetPass";
@@ -25,6 +25,10 @@ import AdminHome from "./pages/admin/adminHome";
 import ReportList from "./components/Admin/ReportList";
 import UserList from "./components/Admin/UserList";
 import PostList from "./components/Admin/PostList";
+import OtherProfile from "./pages/home/OtherProfile";
+import OtherProfileFriend from "./components/OtherProfile/Friend/OtherProfileFriend";
+import OtherProfilePost from "./components/OtherProfile/Post/OtherProfilePost"
+import OtherProfileShare from "./components/OtherProfile/Share/OtherProfileShare"
 
 function App() {
   return (
@@ -56,6 +60,11 @@ function App() {
             <Route index element={<NewsFeed />} />
             <Route path="/confirmpasslogged" element={<ConfirmPass />} />
             <Route path="/messenger" element={<Messenger />} />
+            <Route path="/otherprofile/:username/:userID" element={<OtherProfile/>}>
+              <Route index element={<OtherProfilePost/>}/>
+              <Route path="/otherprofile/:username/:userID/shared" element={<OtherProfileShare/>}/>
+              <Route path="/otherprofile/:username/:userID/friend" element={<OtherProfileFriend/>}/>
+            </Route>
             <Route path="/search" element={<Search />}>
               <Route path="/search/user" element={<UserSearch />} />
               <Route path="/search/post" element={<PostSearch />} />

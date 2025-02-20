@@ -59,6 +59,10 @@ const confimPassSchema = yup.object({
     .matches(/[!@#$%^&*(),.?":{}|<>]/, "Password must contain special letter"),
 });
 
+const reportSchema = yup.object({
+  reportcontent: yup.string().required("Please enter reason!"),
+});
+
 export {
   userRegisterSchema,
   userLoginSchema,
@@ -66,4 +70,5 @@ export {
   postSchema,
   searchSchema,
   confimPassSchema,
+  reportSchema
 };

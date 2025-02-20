@@ -1,0 +1,79 @@
+<div className="flex mt-3">
+                  {/* user card */}
+                  <div className="w-1/6 flex justify-center">
+                    <div className="w-fit h-fit ">
+                      <img
+                        src={`data:image/jpeg;base64,${infoLogger?.profilePicture}`}
+                        className="w-9 h-9 rounded-18px"
+                      />
+                    </div>
+                  </div>
+                  {/* user post */}
+                  <div className="w-3/5">
+                    {/* info */}
+                    <div className="flex gap-10 items-center">
+                      <div className="font-bold h-full ">{post.username}</div>
+                      <div className="text-gray-500 h-full text-sm">
+                        {formatDateTime(post.dateTime)}
+                      </div>
+                    </div>
+                    {/* content */}
+                    <div className="w-full">
+                      <div className="text-sm">{post.content}</div>
+                    </div>
+                    {/* like, cmt, share */}
+                    <div className="flex gap-10 text-gray-500 text-sm">
+                      <div
+                        onClick={() => {
+                          likePostAction(post.postID)
+                          setLikePostID(post.postID);
+                          // console.log(post.postID)
+                          isLikedPost(post.postID)
+                        }}
+                        className={`flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95 hover:cursor-pointer ${
+                          isLikedPost(post.postID) ? "text-blue-600 font-bold" : ""
+                        }`}
+                      >
+                        <div className="pi pi-thumbs-up" />
+                        <div>{post.LikeCounter ? post.LikeCounter : "0"}</div>
+                      </div>
+                      <Link
+                        to={`/comment?postId=${post.postID}`}
+                        query={{ postid: post.postID }}
+                        className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95"
+                      >
+                        <div className="pi pi-comments" />
+                        <div>
+                          {post.CommentCounter ? post.CommentCounter : "0"}
+                        </div>
+                      </Link>
+                      <div className="flex items-center gap-2 py-1 px-2 rounded-xl hover:bg-gray-200 active:scale-95">
+                        <div className="pi pi-share-alt" />
+                        <div>{post.ShareCounter ? post.ShareCounter : "0"}</div>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Edit and Delete  */}
+                  <div className="w-1/5 flex justify-end">
+                    <div
+                      onClick={() => {
+                        setEditPostID(() => {
+                          return post.postID;
+                        });
+
+                        setContentEditPost(() => {
+                          return post.content;
+                        });
+                        setShowEditPost(true);
+                      }}
+                      className="pi pi-pencil h-fit rounded-full p-2 text-cyan-500 hover:bg-gray-200 hover:text-green-500 hover:cursor-pointer active:scale-95"
+                    />
+                    <div
+                      onClick={() => {
+                        setDeletePostID(post.postID);
+                        setShowDeletePost(true);
+                      }}
+                      className="pi pi-trash h-fit rounded-full p-2 text-cyan-500 hover:bg-gray-200 hover:text-red-500 hover:cursor-pointer active:scale-95"
+                    />
+                  </div>
+                </div>
