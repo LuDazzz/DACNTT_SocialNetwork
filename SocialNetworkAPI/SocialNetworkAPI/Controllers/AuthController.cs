@@ -209,7 +209,7 @@ namespace SocialNetworkAPI.Controllers
             await _context.SaveChangesAsync();
 
             // Tạo JWT Token
-            var claims = new[]
+            /*var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserID.ToString()),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
@@ -227,12 +227,11 @@ namespace SocialNetworkAPI.Controllers
                 signingCredentials: creds
             );
 
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(token);*/
 
             return Ok(new
             {
                 message = "Login successful",
-                token = tokenString,
                 user = new
                 {
                     user.UserID,
