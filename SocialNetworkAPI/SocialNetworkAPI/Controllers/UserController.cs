@@ -146,6 +146,11 @@ namespace SocialNetworkAPI.Controllers
                 user.Bio = request.Bio;
             }
 
+            if (request.IsPrivate.HasValue)
+            {
+                user.IsPrivate = request.IsPrivate.Value;
+            }
+
             await _context.SaveChangesAsync();
             return Ok(new { message = "Profile updated successfully." });
         }
@@ -191,6 +196,7 @@ namespace SocialNetworkAPI.Controllers
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
         public string? Bio { get; set; }
+        public bool? IsPrivate { get; set; } = false;
     }
 
 
