@@ -27,6 +27,8 @@ const Post = ({ post, infoLogger, toastRef }) => {
   const [showReport, setShowReport] = useState(false);
   const [contentReport, setContentReport] = useState();
 
+  console.log(infoLogger)
+
   //Check like
   const isLikedPost = useCallback(async (postId, infoLogger) => {
     const result = await dispatch(
@@ -46,7 +48,7 @@ const Post = ({ post, infoLogger, toastRef }) => {
     );
     const postInfo = await dispatch(getPostByPostID({ postID: post.postID }));
     setNewPost(postInfo.payload);
-    isLikedPost(newPost?.postID).then((data) => setIsLiked(data));
+    isLikedPost(newPost?.postID, infoLogger).then((data) => setIsLiked(data));
   };
 
   //Handle display date time

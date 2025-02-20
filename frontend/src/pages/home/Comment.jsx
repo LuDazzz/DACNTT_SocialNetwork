@@ -53,6 +53,8 @@ const Comment = () => {
     getPostInfo();
   }, [dispatch, infoLogger]);
 
+  console.log(postInfo)
+
   //Like post
   const likePostAction = async (postId) => {
     const result = await dispatch(
