@@ -35,6 +35,9 @@ namespace SocialNetworkAPI.Controllers
                     p.DateTime,
                     p.IsUpdated,
                     p.DateTimeUpdated,
+                    p.LikeCounter,
+                    p.CommentCounter,
+                    p.ShareCounter,
                     User = new
                     {
                         p.User.UserID,
