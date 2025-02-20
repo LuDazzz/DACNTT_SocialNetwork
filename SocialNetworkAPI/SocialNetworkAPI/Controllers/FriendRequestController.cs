@@ -109,6 +109,38 @@ namespace SocialNetworkAPI.Controllers
             public int ReceiverID { get; set; }
         }
 
+        // Kiểm tra trạng thái kết bạn của hai người
+        [HttpGet("status")]
+        public async Task<IActionResult> GetFriendRequestStatus(int loggerID, int userID)
+        {
+            // Kiểm tra xem có lời mời kết bạn nào giữa hai người dùng không
+            var friendRequest = await _context.FriendRequests
+                .FirstOrDefaultAsync(fr =>
+                    (fr.SenderID == loggerID && fr.ReceiverID == userID) ||
+                    (fr.SenderID == userID && fr.ReceiverID == loggerID));
+
+            if (friendRequest == null)
+            {
+                // Nếu không có lời mời kết bạn nào, trả về "noRequest"
+                return Ok(new { status = "noRequest" });
+            }
+
+            // Nếu loggerID là người gửi lời mời, trả về "sendRequest"
+            if (friendRequest.SenderID == loggerID)
+            {
+                return Ok(new { status = "sendRequest" });
+            }
+
+            // Nếu loggerID là người nhận lời mời, trả về "isRequest"
+            if (friendRequest.ReceiverID == loggerID)
+            {
+                return Ok(new { status = "isRequested" });
+            }
+
+            // Trường hợp không xác định, trả về lỗi
+            return BadRequest(new { message = "Unknown error occurred." });
+        }
+
         [HttpPost("cancel")]
         public async Task<IActionResult> CancelFriendRequest([FromBody] CancelFriendRequestDto request)
         {
