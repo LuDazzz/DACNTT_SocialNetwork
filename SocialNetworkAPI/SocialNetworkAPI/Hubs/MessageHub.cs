@@ -1,35 +1,48 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Threading.Tasks;
 
 namespace SocialNetworkAPI.Hubs
 {
     public class MessageHub : Hub
     {
-        public async Task SendMessage(int senderId, int receiverId, string message)
-        {
-            // Gửi tin nhắn đến người nhận (chỉ người đó nhận được)
-            await Clients.User(receiverId.ToString()).SendAsync("ReceiveMessage", senderId, message);
-        }
-
+        // Called when a client connects to the hub
         public override async Task OnConnectedAsync()
         {
-            // Khi người dùng kết nối, gán ID của họ vào nhóm riêng
-            var userId = Context.UserIdentifier;
-            if (userId != null)
+            var userId = Context.GetHttpContext()?.Request.Query["userId"];
+            if (!string.IsNullOrEmpty(userId))
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, userId);
             }
+            await base.OnConnectedAsync();
         }
 
-        public override async Task OnDisconnectedAsync(Exception? exception)
+        public async Task SendMessage(int senderId, int receiverId, string content, string imageUrl)
         {
-            // Khi người dùng rời khỏi, xóa khỏi nhóm
-            var userId = Context.UserIdentifier;
-            if (userId != null)
+            await Clients.User(receiverId.ToString())
+                .SendAsync("ReceiveMessage", new
+                {
+                    SenderID = senderId,
+                    Content = content,
+                    ImageUrl = imageUrl,
+                    Timestamp = DateTime.Now
+                });
+        }
+
+        // Called when a client disconnects from the hub
+        public override async Task OnDisconnectedAsync(System.Exception exception)
+        {
+            var userId = Context.GetHttpContext()?.Request.Query["userId"];
+            if (!string.IsNullOrEmpty(userId))
             {
                 await Groups.RemoveFromGroupAsync(Context.ConnectionId, userId);
             }
+            await base.OnDisconnectedAsync(exception);
+        }
+
+        // Method to send notifications
+        public async Task SendNotification(int receiverId, string notification)
+        {
+            await Clients.User(receiverId.ToString()).SendAsync("ReceiveNotification", notification);
         }
     }
 }

@@ -134,3 +134,4 @@ D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAP
 D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\Microsoft.IdentityModel.Tokens.dll
 D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\System.IdentityModel.Tokens.Jwt.dll
+D:\DACNTT\Project\DACNTT_SocialNetwork-main\DACNTT_SocialNetwork\SocialNetworkAPI\SocialNetworkAPI\bin\Debug\net7.0\SocialNetworkAPI.staticwebassets.runtime.json

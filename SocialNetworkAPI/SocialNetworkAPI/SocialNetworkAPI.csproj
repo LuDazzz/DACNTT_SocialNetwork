@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="DefaultAvatar\" />
+    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

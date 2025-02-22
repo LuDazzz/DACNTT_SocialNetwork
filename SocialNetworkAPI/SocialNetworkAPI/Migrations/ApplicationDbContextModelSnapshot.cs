@@ -123,17 +123,9 @@ namespace SocialNetworkAPI.Migrations
                     b.Property<int>("FriendshipID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("User1UserID")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("User2UserID")
-                        .HasColumnType("int");
-
                     b.HasKey("UserID1", "UserID2");
 
-                    b.HasIndex("User1UserID");
-
-                    b.HasIndex("User2UserID");
+                    b.HasIndex("UserID2");
 
                     b.ToTable("Friendships");
                 });
@@ -175,6 +167,9 @@ namespace SocialNetworkAPI.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImageUrl")
                         .HasColumnType("longtext");
 
                     b.Property<string>("MediaType")
@@ -426,13 +421,13 @@ namespace SocialNetworkAPI.Migrations
                         new
                         {
                             UserID = 15,
-                            DateTimeCreate = new DateTime(2025, 2, 19, 13, 24, 21, 165, DateTimeKind.Local).AddTicks(3051),
+                            DateTimeCreate = new DateTime(2025, 2, 22, 19, 2, 13, 197, DateTimeKind.Local).AddTicks(868),
                             Email = "admin@example.com",
                             FriendsCount = 0,
                             IsAdmin = true,
                             IsOnline = false,
                             IsPrivate = false,
-                            LastLogin = new DateTime(2025, 2, 19, 13, 24, 21, 165, DateTimeKind.Local).AddTicks(3061),
+                            LastLogin = new DateTime(2025, 2, 22, 19, 2, 13, 197, DateTimeKind.Local).AddTicks(879),
                             Password = "admin123",
                             Username = "admin"
                         });
@@ -495,11 +490,15 @@ namespace SocialNetworkAPI.Migrations
                 {
                     b.HasOne("SocialNetworkAPI.Models.User", "User1")
                         .WithMany()
-                        .HasForeignKey("User1UserID");
+                        .HasForeignKey("UserID1")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("SocialNetworkAPI.Models.User", "User2")
                         .WithMany()
-                        .HasForeignKey("User2UserID");
+                        .HasForeignKey("UserID2")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("User1");
 

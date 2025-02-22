@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace SocialNetworkAPI.Controllers
 {
@@ -100,8 +101,36 @@ namespace SocialNetworkAPI.Controllers
 
             return Ok("Friendship removed.");
         }
-      
 
+        [HttpGet("list/{userId}")]
+        public async Task<IActionResult> GetFriendsList(int userId)
+        {
+            try
+            {
+                var friends = await _context.Friendships
+                    .Where(f => f.UserID1 == userId || f.UserID2 == userId)
+                    .Select(f => f.UserID1 == userId ? f.UserID2 : f.UserID1) // Lấy ID bạn bè
+                    .Distinct()
+                    .Join(_context.Users,
+                          friendId => friendId,
+                          user => user.UserID,
+                          (friendId, user) => new
+                          {
+                              UserID = user.UserID,
+                              UserName = user.Username,
+                              ProfilePicture = user.ProfilePicture != null
+                                  ? Convert.ToBase64String(user.ProfilePicture)
+                                  : null // Chuyển đổi blob thành base64
+                          })
+                    .ToListAsync();
+
+                return Ok(friends); // Trả về mảng trực tiếp
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
     }
 

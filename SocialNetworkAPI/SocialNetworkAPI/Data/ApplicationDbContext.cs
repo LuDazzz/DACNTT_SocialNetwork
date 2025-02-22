@@ -48,6 +48,18 @@ namespace SocialNetworkAPI.Data
             modelBuilder.Entity<Friendship>()
                 .HasKey(f => new { f.UserID1, f.UserID2 });
 
+            modelBuilder.Entity<Friendship>()
+            .HasOne(f => f.User1)
+            .WithMany()
+            .HasForeignKey(f => f.UserID1)
+            .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Friendship>()
+                .HasOne(f => f.User2)
+                .WithMany()
+                .HasForeignKey(f => f.UserID2)
+                .OnDelete(DeleteBehavior.Restrict);
+
             // Định nghĩa quan hệ Block (Chặn)
             modelBuilder.Entity<Block>()
                 .HasKey(b => new { b.UserID1, b.UserID2 });

@@ -1,0 +1,45 @@
+{
+  "Files": [
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\0894cded-235e-4e10-82c2-fa2901fbc53c.png",
+      "PackagePath": "staticwebassets\\images\\0894cded-235e-4e10-82c2-fa2901fbc53c.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\8ba444ac-0818-461d-b0d5-b1729d8bf88e.png",
+      "PackagePath": "staticwebassets\\images\\8ba444ac-0818-461d-b0d5-b1729d8bf88e.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\93195c1f-2628-4b90-b408-d0d128f7fca1.png",
+      "PackagePath": "staticwebassets\\images\\93195c1f-2628-4b90-b408-d0d128f7fca1.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\a73514b9-891c-481b-a696-4e3f22a9653d.png",
+      "PackagePath": "staticwebassets\\images\\a73514b9-891c-481b-a696-4e3f22a9653d.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\e766c9a3-582c-469f-8025-932b0ce39b51.png",
+      "PackagePath": "staticwebassets\\images\\e766c9a3-582c-469f-8025-932b0ce39b51.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\fa5b9d13-fd2c-4fc4-88be-fa22eccf1738.png",
+      "PackagePath": "staticwebassets\\images\\fa5b9d13-fd2c-4fc4-88be-fa22eccf1738.png"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.SocialNetworkAPI.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.build.SocialNetworkAPI.props",
+      "PackagePath": "build\\SocialNetworkAPI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildMultiTargeting.SocialNetworkAPI.props",
+      "PackagePath": "buildMultiTargeting\\SocialNetworkAPI.props"
+    },
+    {
+      "Id": "obj\\Debug\\net7.0\\staticwebassets\\msbuild.buildTransitive.SocialNetworkAPI.props",
+      "PackagePath": "buildTransitive\\SocialNetworkAPI.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

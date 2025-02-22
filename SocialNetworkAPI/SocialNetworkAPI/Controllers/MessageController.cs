@@ -25,14 +25,14 @@ namespace SocialNetworkAPI.Controllers
 
         // Gửi tin nhắn
         [HttpPost("send")]
-        public async Task<IActionResult> SendMessage([FromBody] MessageRequest request)
+        public async Task<IActionResult> SendMessage([FromForm] MessageRequest request)
         {
-            if (request == null || string.IsNullOrEmpty(request.Content))
+            if (request == null || (string.IsNullOrEmpty(request.Content) && request.ImageFile == null))
             {
-                return BadRequest(new { message = "Invalid message data." });
+                return BadRequest(new { message = "Invalid message data. Either Content or ImageFile is required." });
             }
 
-            // Tạo tin nhắn mới
+            // Logic xử lý tin nhắn
             var message = new SocialNetworkAPI.Models.Message
             {
                 SenderID = request.SenderID,
@@ -42,39 +42,38 @@ namespace SocialNetworkAPI.Controllers
                 Timestamp = DateTime.Now
             };
 
+            if (request.ImageFile != null)
+            {
+                var imageUrl = await SaveImage(request.ImageFile);
+                message.ImageUrl = imageUrl;
+                message.MediaType = "image";
+            }
+
             try
             {
                 _context.Messages.Add(message);
                 await _context.SaveChangesAsync();
 
-                // **Tạo thông báo cho người nhận**
+                // Tạo thông báo và gửi real-time
                 var notification = new Notification
                 {
-                    UserID = request.ReceiverID,  // Người nhận tin nhắn
-                    SenderID = request.SenderID,  // Người gửi tin nhắn
+                    UserID = request.ReceiverID,
+                    SenderID = request.SenderID,
                     Content = "You have a new message.",
                     DateTime = DateTime.Now,
                     Type = "message"
                 };
 
                 _context.Notifications.Add(notification);
-                await _context.SaveChangesAsync(); // Lưu thông báo vào DB
+                await _context.SaveChangesAsync();
 
-                // **Gửi thông báo real-time qua SignalR**
                 await _hubContext.Clients.User(request.ReceiverID.ToString())
                     .SendAsync("ReceiveMessage", new
                     {
                         SenderID = message.SenderID,
                         Content = message.Content,
+                        ImageUrl = message.ImageUrl,
                         Timestamp = message.Timestamp
-                    });
-
-                // Gửi sự kiện thông báo mới cho frontend
-                await _hubContext.Clients.User(request.ReceiverID.ToString())
-                    .SendAsync("ReceiveNotification", new
-                    {
-                        Message = "You have a new message.",
-                        SenderID = request.SenderID
                     });
 
                 return Ok(new { message = "Message sent successfully!", data = message });
@@ -83,6 +82,25 @@ namespace SocialNetworkAPI.Controllers
             {
                 return StatusCode(500, new { message = "An error occurred while sending the message.", error = ex.Message });
             }
+        }
+
+        // Hàm lưu hình ảnh và trả về đường dẫn
+        private async Task<string> SaveImage(IFormFile imageFile)
+        {
+            // Tạo tên file duy nhất
+            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(imageFile.FileName);
+
+            // Đường dẫn lưu trữ hình ảnh
+            var filePath = Path.Combine("wwwroot/images", fileName);
+
+            // Lưu hình ảnh vào thư mục
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await imageFile.CopyToAsync(stream);
+            }
+
+            // Trả về đường dẫn truy cập hình ảnh
+            return $"/images/{fileName}";
         }
 
 
@@ -107,8 +125,9 @@ namespace SocialNetworkAPI.Controllers
                         m.MessageID,
                         m.SenderID,
                         m.ReceiverID,
-                        m.Content,
+                        Content = m.Content ?? "",
                         m.MediaType,
+                        ImageUrl = string.IsNullOrEmpty(m.ImageUrl) ? null : $"{Request.Scheme}://{Request.Host}{m.ImageUrl}", // Trả về link hình ảnh đầy đủ
                         m.Timestamp
                     })
                     .ToListAsync();
@@ -145,6 +164,31 @@ namespace SocialNetworkAPI.Controllers
                 return StatusCode(500, new { message = "An error occurred while deleting the message.", error = ex.Message });
             }
         }
+
+        // Lấy danh sách bạn bè của người dùng
+        [HttpGet("friends/{userId}")]
+        public async Task<IActionResult> GetFriends(int userId)
+        {
+            try
+            {
+                // Lấy danh sách bạn bè từ bảng Friendship
+                var friends = await _context.Friendships
+                    .Where(f => f.UserID1 == userId || f.UserID2 == userId)
+                    .Select(f => new
+                    {
+                        FriendID = f.UserID1 == userId ? f.UserID2 : f.UserID1, // Lấy ID của bạn bè
+                        FriendName = f.UserID1 == userId ? f.User2.Username : f.User1.Username, // Lấy tên của bạn bè
+                        CreatedAt = f.CreatedAt
+                    })
+                    .ToListAsync();
+
+                return Ok(friends);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving friends.", error = ex.Message });
+            }
+        }
     }
 
     // Model cho request gửi tin nhắn
@@ -152,8 +196,9 @@ namespace SocialNetworkAPI.Controllers
     {
         public int SenderID { get; set; }
         public int ReceiverID { get; set; }
-        public string Content { get; set; }
-        public string Type { get; set; } // "text", "image", "video", "audio", "location"
+        public string? Content { get; set; }
+        public string? Type { get; set; } // "text", "image", "video", "audio", "location"
+        public IFormFile? ImageFile { get; set; }
     }
 
     // Model cho tin nhắn trong database
@@ -162,7 +207,7 @@ namespace SocialNetworkAPI.Controllers
         public int Id { get; set; }
         public int SenderID { get; set; }
         public int ReceiverID { get; set; }
-        public string Content { get; set; }
+        public string? Content { get; set; }
         public string Type { get; set; }
         public DateTime Timestamp { get; set; }
     }

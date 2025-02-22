@@ -15,8 +15,8 @@ namespace SocialNetworkAPI.Models
         [Required]
         public int ReceiverID { get; set; }
 
-        [Required]
         public string Content { get; set; } = string.Empty;
+        public string? ImageUrl { get; set; }
 
         public string? MediaType { get; set; } // text, emoji, image, audio, video, location
 

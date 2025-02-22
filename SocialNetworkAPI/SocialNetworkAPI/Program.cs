@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+ï»¿using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using SocialNetworkAPI;
 using SocialNetworkAPI.Data;
@@ -10,33 +10,28 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Database context
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
-    ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
 
-// ? Thêm CORS
+// CORS configuration
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader());
-});
-
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: MyAllowSpecificOrigins,
+    options.AddPolicy("AllowFrontend",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5173")  // Replace with your frontend URL
-                  .AllowCredentials()  // Allow cookies/auth headers
+            policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+                  .AllowCredentials()
                   .AllowAnyMethod()
                   .AllowAnyHeader();
         });
 });
 
+// JSON Serialization configuration
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -44,9 +39,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.WriteIndented = true;
     });
 
+// SignalR
 builder.Services.AddSignalR();
 
-/*builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// Authentication configuration - uncomment when needed
+/*
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
@@ -61,38 +59,31 @@ builder.Services.AddSignalR();
         };
     });
 
-builder.Services.AddAuthorization();*/
-
+builder.Services.AddAuthorization();
+*/
 
 var app = builder.Build();
 
+// Development environment specific configuration
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-
-
-
-
+// Middleware pipeline
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCors(MyAllowSpecificOrigins);
-
-// ? Thêm CORS Middleware
-app.UseCors("AllowAll");
-
+app.UseCors("AllowFrontend");  // Use the CORS policy we defined
 app.UseAuthentication();
 app.UseAuthorization();
-//app.UseMiddleware<AdminAuthorizationMiddleware>();
+app.UseStaticFiles();
 
 
+// Map endpoints
 app.MapControllers();
-
-
-app.MapHub<MessageHub>("/messageHub");
+app.MapHub<MessageHub>("/hubs/messageHub");
 app.MapHub<NotificationHub>("/notificationHub");
 
-
+// Run the application
 app.Run();
