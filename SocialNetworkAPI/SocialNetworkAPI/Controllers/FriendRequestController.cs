@@ -156,6 +156,35 @@ namespace SocialNetworkAPI.Controllers
             return Ok(new { message = "Friend request canceled successfully." });
         }
 
+        [HttpGet("requests/{receiverId}")]
+        public async Task<IActionResult> GetFriendRequestsForUser(int receiverId)
+        {
+            try
+            {
+                var friendRequests = await _context.FriendRequests
+                    .Where(fr => fr.ReceiverID == receiverId)
+                    .Join(_context.Users,
+                          fr => fr.SenderID,
+                          user => user.UserID,
+                          (fr, user) => new
+                          {
+                              RequestID = fr.RequestID,
+                              SenderID = user.UserID,
+                              SenderUsername = user.Username,
+                              SenderProfilePicture = user.ProfilePicture != null
+                                  ? Convert.ToBase64String(user.ProfilePicture)
+                                  : null,
+                              SentAt = fr.DateTime
+                          })
+                    .ToListAsync();
+                return Ok(friendRequests);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred.", error = ex.Message });
+            }
+        }
+
         public class CancelFriendRequestDto
         {
             public int SenderID { get; set; }

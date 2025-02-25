@@ -1,8 +1,36 @@
 {
   "Files": [
     {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\006bb0a6-b4f2-4743-af08-338abb3cbd13.png",
+      "PackagePath": "staticwebassets\\images\\006bb0a6-b4f2-4743-af08-338abb3cbd13.png"
+    },
+    {
       "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\0894cded-235e-4e10-82c2-fa2901fbc53c.png",
       "PackagePath": "staticwebassets\\images\\0894cded-235e-4e10-82c2-fa2901fbc53c.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\1449bf66-49c0-4506-9e87-6115640051c1.png",
+      "PackagePath": "staticwebassets\\images\\1449bf66-49c0-4506-9e87-6115640051c1.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\4003b1e4-3fc6-4fb7-9567-15de38667196.png",
+      "PackagePath": "staticwebassets\\images\\4003b1e4-3fc6-4fb7-9567-15de38667196.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\42188c53-7712-4b7d-892a-3d7077907f52.png",
+      "PackagePath": "staticwebassets\\images\\42188c53-7712-4b7d-892a-3d7077907f52.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\61489f14-5b3e-4201-a440-dd94232c5a79.png",
+      "PackagePath": "staticwebassets\\images\\61489f14-5b3e-4201-a440-dd94232c5a79.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\6bb975a1-5dbd-4f8d-977e-4b1350cb2b02.png",
+      "PackagePath": "staticwebassets\\images\\6bb975a1-5dbd-4f8d-977e-4b1350cb2b02.png"
+    },
+    {
+      "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\8494f177-133b-4c61-a61a-8a586e3dc732.png",
+      "PackagePath": "staticwebassets\\images\\8494f177-133b-4c61-a61a-8a586e3dc732.png"
     },
     {
       "Id": "D:\\DACNTT\\Project\\DACNTT_SocialNetwork-main\\DACNTT_SocialNetwork\\SocialNetworkAPI\\SocialNetworkAPI\\wwwroot\\images\\8ba444ac-0818-461d-b0d5-b1729d8bf88e.png",
